@@ -5,13 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 
-    private void Update()
+    public void OnUpdate(PlatformManager Manager)
     {
-        if (PlatformSides.Instance != null)
-        {
-            SideResults Result = PlatformSides.Instance.GetSide(transform.position);
-            Debug.DrawRay(Result.Position, Result.Normal, Color.blue);
-            Debug.DrawRay(Result.Position, Result.Right, Color.green);
-        }
+        SideResults Result = Manager.GetSide(transform.position);
+        Debug.DrawRay(Result.Position, Result.Normal, Color.blue);
+        Debug.DrawRay(Result.Position, Result.Right, Color.green);
+
     }
 }
