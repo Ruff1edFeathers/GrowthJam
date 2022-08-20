@@ -31,9 +31,14 @@ public abstract class PlayerState
 public class PlayerController : MonoBehaviour
 {
     //Inspector Values
+    [Header("Speeds")]
     public float m_BaseSpeed = 2.5f;
     public float m_AccelSpeed = 1.25f;
     public float m_MaxSpeed = 10.0f;
+
+    [Header("Physics")]
+    public CapsuleCollider m_Collider;
+    public float m_MaxSlopeAngle = 45f;
     public float m_Friction = 0.25f;
     public float m_Gravity = 2f;
     public float m_RayCheckOffset = 0.25f;
@@ -54,6 +59,7 @@ public class PlayerController : MonoBehaviour
     //Cached Values
     private PlayerState m_State;
     private SideResults m_Side;
+    private float       m_Height;
     private Vector3     m_Position;
     private bool        m_Grounded;
     private Vector3     m_GroundedHit;
@@ -64,6 +70,8 @@ public class PlayerController : MonoBehaviour
     public void OnSetup(PlatformManager Manager)
     {
         m_LocomotionState = new PlayerLocomotionState(this);
+
+        m_Height = m_Collider.height;
 
         State = m_LocomotionState;
     }
@@ -117,6 +125,28 @@ public class PlayerController : MonoBehaviour
         //Note: Only account for velocity that is greater than 0,
         //dont reflect negative values otherwise the player will bounce off the floor!
 
+        //Offset by a small padding to make sure we dont collide with the floor while grounded
+        const float Padding = 0.1f;
+        float   Height  = m_Collider.height - Padding;
+        Vector3 Offset  = new Vector3(0, Height / m_RayCheckCount, 0);
+        Vector3 VelDir  = Vector3.Normalize(new Vector3(Velocity.x, Velocity.y > 0.0f ? Velocity.y : 0.0f, Velocity.z));
+
+        for(int i = 0; i < m_RayCheckCount; i++)
+        {
+            Vector3 Origin = m_Position + (Offset * i) + new Vector3(0, Padding, 0);
+            if(Physics.Raycast(Origin, VelDir, out RaycastHit Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+            {
+                if(Vector3.Angle(Hit.normal, Vector3.up) > m_MaxSlopeAngle)
+                {
+                    //Hit a wall! Bounce off it!
+                    //Todo: Implement :)
+                    Debug.DrawLine(Origin, Hit.point);
+
+                    return Vector3.zero;
+                }
+            }
+        }
+
         return Velocity;
     }
 
@@ -136,8 +166,15 @@ public class PlayerController : MonoBehaviour
             //Player is grounded clamp to the ground y position
             NewPosition.y = m_GroundedHit.y;
 
-            //Calculate Movement along side delta   
-            Velocity += -m_Side.Delta * m_BaseSpeed * InputWrapper.GetAxis(eInputAction.Movement);
+            //Calculate Movement along side delta
+            Vector3 Movement = -m_Side.Delta * InputWrapper.GetAxis(eInputAction.Movement);
+            float Movement_Len = Movement.magnitude;
+            Movement = Vector3.Normalize(Movement);
+
+            //Project Movement onto surface normal
+            float SurfaceDot = Vector3.Dot(Movement, m_GroundNormal);
+            Vector3 SurfaceVelocity = Vector3.Normalize(Movement - m_GroundNormal * SurfaceDot) * Movement_Len;
+            Velocity += SurfaceVelocity * m_BaseSpeed;
 
             //Check if state lets us jump
             if ((State.Flags & ePlayerFlags.CanJump) != 0 && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
@@ -146,10 +183,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        Velocity = CheckCollision(Velocity);
+
         if (!m_Grounded)
             Velocity.y -= m_Gravity;
-
-        CheckCollision(Velocity);
 
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal);

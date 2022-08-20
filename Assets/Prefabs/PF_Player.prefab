@@ -143,6 +143,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87d0255d6e6c76d49a30b3a9898d2ea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WalkSpeed: 0
-  m_RunSpeed: 0
-  m_SlideSpeed: 0
+  m_BaseSpeed: 2.5
+  m_AccelSpeed: 1.25
+  m_MaxSpeed: 10
+  m_Collider: {fileID: 4245724381659684257}
+  m_MaxSlopeAngle: 45
+  m_Friction: 0.25
+  m_Gravity: 2
+  m_RayCheckOffset: 0.25
+  m_RayCheckCount: 4
+  m_GroundMask:
+    serializedVersion: 2
+    m_Bits: 8

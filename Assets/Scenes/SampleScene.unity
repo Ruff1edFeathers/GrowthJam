@@ -12321,6 +12321,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
+      propertyPath: m_MaxSlopeAngle
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
+        type: 3}
       propertyPath: m_GroundMask.m_Bits
       value: 8
       objectReference: {fileID: 0}
