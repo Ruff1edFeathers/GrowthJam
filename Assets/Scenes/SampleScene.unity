@@ -2184,8 +2184,8 @@ Light:
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_NormalBias: 0
+    m_NearPlane: 0.1
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -2251,7 +2251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 1
-  m_UsePipelineSettings: 1
+  m_UsePipelineSettings: 0
   m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
   m_CustomShadowLayers: 0
@@ -12180,26 +12180,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PF_Camera
       objectReference: {fileID: 0}
-    - target: {fileID: 258809704504063224, guid: 653fb0e2560136647800637de12a6bf9,
-        type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 258809704504063224, guid: 653fb0e2560136647800637de12a6bf9,
-        type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 258809704504063224, guid: 653fb0e2560136647800637de12a6bf9,
-        type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 258809704504063224, guid: 653fb0e2560136647800637de12a6bf9,
-        type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 258809704504063227, guid: 653fb0e2560136647800637de12a6bf9,
         type: 3}
       propertyPath: m_RootOrder
@@ -12269,11 +12249,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 276497279358968593, guid: af1114ec1497f314a968ca17dc2423f4,
-        type: 3}
-      propertyPath: m_FlipX
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4245724382423561808, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
       propertyPath: m_Name
@@ -12336,33 +12311,97 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
-      propertyPath: m_RunSpeed
-      value: 6
+      propertyPath: m_FlashSpeed
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
-      propertyPath: m_SkidTime
-      value: 0.5
+      propertyPath: m_HurtColour.a
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
-      propertyPath: m_WalkSpeed
-      value: 3
+      propertyPath: m_HurtColour.b
+      value: 0.41037738
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
-      propertyPath: m_MaxSlopeAngle
-      value: 50
+      propertyPath: m_HurtColour.g
+      value: 0.41037738
       objectReference: {fileID: 0}
     - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
         type: 3}
-      propertyPath: m_StopFricition
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4377263769368120191, guid: af1114ec1497f314a968ca17dc2423f4,
-        type: 3}
-      propertyPath: m_GroundMask.m_Bits
-      value: 8
+      propertyPath: m_HurtColour.r
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af1114ec1497f314a968ca17dc2423f4, type: 3}
+--- !u!1001 &6755436515151417337
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.527327
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4540968
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.004
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 387172847083426257, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755072052383204274, guid: 17af34caf3bbfa44f9702d3c58e8841a,
+        type: 3}
+      propertyPath: m_Name
+      value: PF_Spikes
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17af34caf3bbfa44f9702d3c58e8841a, type: 3}

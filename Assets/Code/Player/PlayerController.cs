@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Stats")]
     public int m_MaxHealth = 5;
+    public float m_DamageGracePeroid = 2f;
 
     //Inspector Values
     [Header("Speeds")]
@@ -26,6 +27,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Animation")]
     public SpriteRenderer m_Renderer;
+    public Color m_HurtColour = Color.red;
+    public float m_FlashSpeed = 0.25f;
     public Sprite m_Stand;
     public float m_WalkAnimSpeed = 0.25f;
     public Sprite m_Walk1;
@@ -56,6 +59,7 @@ public class PlayerController : MonoBehaviour
 
     //Cached Values
     private PlayerState m_State;
+    private float m_DamgeGraceTimer;
 
     public SideResults m_Side;
     [System.NonSerialized] public float   m_Height;
@@ -91,6 +95,19 @@ public class PlayerController : MonoBehaviour
         if (State == null)
             return; //No State nothing to do
 
+        if(m_DamgeGraceTimer > 0.0f)
+        {
+            //Flash Hurt colour whilst in the damage grace peroid
+            float FlashAlpha = Mathf.PingPong(Time.time, m_FlashSpeed) / m_FlashSpeed;
+            m_Renderer.color = Color.Lerp(Color.white, m_HurtColour, FlashAlpha);
+            m_DamgeGraceTimer -= Time.deltaTime;
+
+            if(m_DamgeGraceTimer <= 0.0f)
+            {
+                m_Renderer.color = Color.white;
+            }
+        }
+
         m_Position = transform.position;
         m_Side     = Manager.GetSide(m_Position);
 
@@ -122,6 +139,30 @@ public class PlayerController : MonoBehaviour
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal); //TODO: These rotations can be pre-calculated
         transform.position = m_Position;
+    }
+
+    public void TakeDamage()
+    {
+        if(m_DamgeGraceTimer > 0.0f)
+        {
+            //Avoid taking damage as we are immune for abit
+            return;
+        }
+
+        Debug.Log("Take Damage!");
+
+        m_Health--;
+        HUDUI.s_Instance.UpdateHealth(m_Health);
+
+        if (m_Health <= 0)
+        {
+            //We've died?! Change state right away
+            State = m_DeadState;
+            return;
+        }
+
+        //Enter into immunity grace peroid
+        m_DamgeGraceTimer = m_DamageGracePeroid;
     }
 
     public void CheckGrounded()
@@ -172,8 +213,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(0, 0, 200, 25), "Speed: " + m_Speed);
-        GUI.Label(new Rect(0, 25, 200, 25), "Velocity: " + m_Velocity);
+        GUI.Label(new Rect(0, Screen.height - 25,  100, 25), "Speed: " + m_Speed);
+        GUI.Label(new Rect(0, Screen.height - 50, 100, 25),  "Velocity: " + m_Velocity);
+        GUI.Label(new Rect(0, Screen.height - 75, 100, 25),  "Health: " + m_Health);
     }
 
     
