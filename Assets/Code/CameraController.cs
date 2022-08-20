@@ -1,7 +1,5 @@
 using UnityEngine;
 
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
-
 public enum eCameraState
 {
     RotateAround,
