@@ -36,7 +36,8 @@ public class PlayerController : MonoBehaviour
     public float m_MaxSpeed = 10.0f;
     public float m_Friction = 0.25f;
     public float m_Gravity = 2f;
-    public float m_GroundCheckOffset = 0.25f;
+    public float m_RayCheckOffset = 0.25f;
+    public int m_RayCheckCount = 4;
     public LayerMask m_GroundMask;
 
     public PlayerState State
@@ -96,8 +97,8 @@ public class PlayerController : MonoBehaviour
     { 
         //Check if the player is grounded
         //TODO: Multiple Casts and get the average normal for smoother movement?!
-        Vector3 RayOffset = new Vector3(0, m_GroundCheckOffset / 2f, 0);
-        if (!Physics.Raycast(m_Position + RayOffset, -RayOffset, out RaycastHit Hit, m_GroundCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+        Vector3 RayOffset = new Vector3(0, m_RayCheckOffset / 2f, 0);
+        if (!Physics.Raycast(m_Position + RayOffset, -RayOffset, out RaycastHit Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
         {
             m_Grounded = false;
             return;
@@ -106,6 +107,17 @@ public class PlayerController : MonoBehaviour
         m_Grounded     = true;
         m_GroundedHit  = Hit.point;
         m_GroundNormal = Hit.normal;
+    }
+
+    private Vector3 CheckCollision(Vector3 Velocity)
+    {
+        //Check for collision along the projected velocity
+        //TODO: Check if hit collision normal is less than the max accepted slope angle
+        //TODO: Bounce off wall if velocity is greater than X Value, subtracting some velocity
+        //Note: Only account for velocity that is greater than 0,
+        //dont reflect negative values otherwise the player will bounce off the floor!
+
+        return Velocity;
     }
 
     private void DoLocomotion()
@@ -136,6 +148,8 @@ public class PlayerController : MonoBehaviour
 
         if (!m_Grounded)
             Velocity.y -= m_Gravity;
+
+        CheckCollision(Velocity);
 
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal);
