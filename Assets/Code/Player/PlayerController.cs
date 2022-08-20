@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum ePlayerFlags
 {
@@ -31,8 +32,13 @@ public abstract class PlayerState
 public class PlayerController : MonoBehaviour
 {
     //Inspector Values
-    public float m_WalkSpeed;
-    public float m_RunSpeed;
+    public float m_BaseSpeed = 2.5f;
+    public float m_AccelSpeed = 1.25f;
+    public float m_MaxSpeed = 10.0f;
+    public float m_Friction = 0.25f;
+    public float m_Gravity = 2f;
+    public float m_GroundCheckOffset = 0.25f;
+    public LayerMask m_GroundMask;
 
     public PlayerState State
     {
@@ -47,6 +53,11 @@ public class PlayerController : MonoBehaviour
 
     //Cached Values
     private PlayerState m_State;
+    private SideResults m_Side;
+    private Vector3     m_Position;
+    private bool        m_Grounded;
+    private Vector3     m_GroundedHit;
+    private Vector3     m_GroundNormal;
 
     public PlayerLocomotionState m_LocomotionState;
 
@@ -75,32 +86,62 @@ public class PlayerController : MonoBehaviour
                 return; //No State nothing to do
         }
 
-        //Check if state wants us to handle locomotion
-        if ((State.Flags & ePlayerFlags.Locomotion) == 0)
-            return;
+        m_Position = transform.position;
+        m_Side     = Manager.GetSide(m_Position);
 
-        Vector3     Position = transform.position;
-        SideResults Side = Manager.GetSide(Position);
+        CheckGrounded();
+        DoLocomotion();
+    }
+
+    private void CheckGrounded()
+    { 
+        //Check if the player is grounded
+        //TODO: Multiple Casts and get the average normal for smoother movement?!
+        Vector3 RayOffset = new Vector3(0, m_GroundCheckOffset / 2f, 0);
+        if (!Physics.Raycast(m_Position + RayOffset, -RayOffset, out RaycastHit Hit, m_GroundCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+        {
+            m_Grounded = false;
+            return;
+        }
+
+        m_Grounded     = true;
+        m_GroundedHit  = Hit.point;
+        m_GroundNormal = Hit.normal;
+    }
+
+    private void DoLocomotion()
+    {
+        Vector3 Velocity = Vector3.zero;
+        Vector3 NewPosition = m_Position;
 
         //Clamp X & Z position onto platform side
         //Y is unclamped for airbourne movement
-        Position.x = Side.Position.x;
-        Position.z = Side.Position.z;
+        NewPosition.x = m_Side.Position.x;
+        NewPosition.z = m_Side.Position.z;
 
-        //Calculate Movement along side delta TODO: Replace with unity Input System
-        float Speed      = Input.GetKey(KeyCode.LeftShift) ? m_RunSpeed : m_WalkSpeed;
-        float Horizontal = Input.GetAxis("Horizontal");
+        //Check if we are both grounded and state wants us to handle locomotion
+        if (m_Grounded && (State.Flags & ePlayerFlags.Locomotion) != 0)
+        {
+            //Player is grounded clamp to the ground y position
+            NewPosition.y = m_GroundedHit.y;
 
-        Vector3 Velocity = -Side.Delta * Horizontal * Speed;
+            //Calculate Movement along side delta TODO: Replace with unity Input System
+            float Horizontal = Input.GetAxis("Horizontal");
+
+            Velocity += -m_Side.Delta * Horizontal * m_BaseSpeed;
+
+            //Check if state lets us jump
+            if ((State.Flags & ePlayerFlags.CanJump) != 0)
+            {
+                //TODO: Implement :)
+            }
+        }
+
+        if (!m_Grounded)
+            Velocity.y -= m_Gravity;
 
         //Apply new Rotation and positions
-        transform.rotation = Quaternion.LookRotation(Side.Normal);
-        transform.position = Position + (Velocity * Time.deltaTime);
-
-        //Check if state lets us jump
-        if ((State.Flags & ePlayerFlags.CanJump) == 0)
-            return;
-
-        //TODO: Implement :)
+        transform.rotation = Quaternion.LookRotation(m_Side.Normal);
+        transform.position = NewPosition + (Velocity * Time.deltaTime);
     }
 }
