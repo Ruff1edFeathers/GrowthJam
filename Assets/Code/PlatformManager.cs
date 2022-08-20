@@ -6,7 +6,7 @@ public struct SideResults
 {
     public Vector3 Position; //Point along side
     public Vector3 Normal;
-    public Vector3 Right; //Right Direction for this side
+    public Vector3 Delta; //Right Direction for this side
 }
 
 //Add support for multiple PlatformSides, could have different segment counts
@@ -35,6 +35,8 @@ public class PlatformManager : MonoBehaviour
         Instance = this;
 
         CalculatePlatformSides();
+
+        m_Controller.OnSetup(this);
     }
 
     private void Update()
@@ -88,8 +90,8 @@ public class PlatformManager : MonoBehaviour
         return new SideResults()
         {
             Position = ClosestSide_Point,
-            Normal = m_Sides[ClosetSide_IDx].Normal,
-            Right = m_Sides[ClosetSide_IDx].Delta
+            Normal   = m_Sides[ClosetSide_IDx].Normal,
+            Delta    = m_Sides[ClosetSide_IDx].Delta
         };
     }
 
