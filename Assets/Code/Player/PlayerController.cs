@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public enum ePlayerFlags
 {
@@ -125,15 +124,13 @@ public class PlayerController : MonoBehaviour
             //Player is grounded clamp to the ground y position
             NewPosition.y = m_GroundedHit.y;
 
-            //Calculate Movement along side delta TODO: Replace with unity Input System
-            float Horizontal = Input.GetAxis("Horizontal");
-
-            Velocity += -m_Side.Delta * Horizontal * m_BaseSpeed;
+            //Calculate Movement along side delta   
+            Velocity += -m_Side.Delta * m_BaseSpeed * InputWrapper.GetAxis(eInputAction.Movement);
 
             //Check if state lets us jump
-            if ((State.Flags & ePlayerFlags.CanJump) != 0)
+            if ((State.Flags & ePlayerFlags.CanJump) != 0 && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
             {
-                //TODO: Implement :)
+                Debug.Log("Jump... Implement :)");
             }
         }
 
