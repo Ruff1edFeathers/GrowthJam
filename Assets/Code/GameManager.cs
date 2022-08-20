@@ -26,39 +26,48 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogError("Initalized GameManager without a GameManager Component?!");
         }
-
-        s_Instance.OnSetup();
     }
 
     //Inspector Varibles
     public InputActionAsset m_GameInputAsset;
+    public MainMenuUI m_MainMenuUI;
     public PauseUI m_PauseUI;
 
     //Cached Values
     public InputWrapper m_InputWrapper;
+
+    private bool m_Setup;
 
     private void OnSetup()
     {
         m_InputWrapper = new InputWrapper(m_GameInputAsset);
 
         m_PauseUI.OnSetup();
+        m_MainMenuUI.SetState(true);
     }
 
     //Master Game Loop
     private void Update()
     {
+        if(!m_Setup)
+        {
+            OnSetup();
+            m_Setup = true;
+        }
+
         //Grab Inputs before anything else
         m_InputWrapper.OnUpdate();
 
-        m_PauseUI.OnUpdate();
-
-        if(m_PauseUI.m_State)
+        //Only update pause UI when we aren't show the Main Menu UI
+        if(!m_MainMenuUI.m_State)
         {
-            //Game is Paused, so prevent rest of loop from running
-            return;
+            m_PauseUI.OnUpdate();
+
+            if (m_PauseUI.m_State)
+                return;
         }
 
         //Run Main Game Loop
-        PlatformManager.Instance?.OnUpdate(this);
+        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State);
     }
 }

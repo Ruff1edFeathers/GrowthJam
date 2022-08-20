@@ -41,9 +41,14 @@ public class PlatformManager : MonoBehaviour
         m_CameraController.OnSetup();
     }
 
-    public void OnUpdate(GameManager Manager)
+    public void OnUpdate(bool RunGame)
     {
-        m_PlayerController.OnUpdate(this);
+        if (RunGame)
+        {
+            m_PlayerController.OnUpdate(this);
+        }
+
+        //Camera Controller should still update, IE if we are in the main menu
         m_CameraController.OnUpdate();
     }
 
