@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
 
     //Inspector Varibles
     public InputActionAsset m_GameInputAsset;
+    public PauseUI m_PauseUI;
 
     //Cached Values
     public InputWrapper m_InputWrapper;
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
     private void OnSetup()
     {
         m_InputWrapper = new InputWrapper(m_GameInputAsset);
+
+        m_PauseUI.OnSetup();
     }
 
     //Master Game Loop
@@ -46,6 +49,14 @@ public class GameManager : MonoBehaviour
     {
         //Grab Inputs before anything else
         m_InputWrapper.OnUpdate();
+
+        m_PauseUI.OnUpdate();
+
+        if(m_PauseUI.m_State)
+        {
+            //Game is Paused, so prevent rest of loop from running
+            return;
+        }
 
         //Run Main Game Loop
         PlatformManager.Instance?.OnUpdate(this);

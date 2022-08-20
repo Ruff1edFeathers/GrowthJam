@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -12,12 +10,12 @@ public class CameraController : MonoBehaviour
 
     private Quaternion m_OffsetRot;
 
-    private void Awake()
+    public void OnSetup()
     {
         m_OffsetRot = Quaternion.Euler(m_PitchRot, 0, 0);
     }
 
-    private void Update()
+    public void OnUpdate()
     {
         Vector3 CurrentDir  = Vector3.Normalize(Flatten(transform.position));
         Vector3 TrackingDir = Vector3.Normalize(Flatten(m_TrackingTarget.position));

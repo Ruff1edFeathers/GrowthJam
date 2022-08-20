@@ -16,8 +16,9 @@ public class PlatformManager : MonoBehaviour
     public static PlatformManager Instance { get; private set; }
 
     //Inspector Varibles
+    public CameraController m_CameraController;
+    public PlayerController m_PlayerController;
     public Transform[]      m_ControlPoints = new Transform[2];
-    public PlayerController m_Controller;
 
     struct SideData
     {
@@ -36,12 +37,14 @@ public class PlatformManager : MonoBehaviour
 
         CalculatePlatformSides();
 
-        m_Controller.OnSetup(this);
+        m_PlayerController.OnSetup(this);
+        m_CameraController.OnSetup();
     }
 
     public void OnUpdate(GameManager Manager)
     {
-        m_Controller.OnUpdate(this);
+        m_PlayerController.OnUpdate(this);
+        m_CameraController.OnUpdate();
     }
 
     private void CalculatePlatformSides()
