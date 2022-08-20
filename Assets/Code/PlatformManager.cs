@@ -31,10 +31,10 @@ public class PlatformManager : MonoBehaviour
     //Cached Values
     private SideData[] m_Sides;
 
-    private void OnEnable()
-    {
-        Instance = this;
+    private void Awake() { Instance = this; }
 
+    public void OnSetup()
+    {
         CalculatePlatformSides();
 
         m_PlayerController.OnSetup(this);

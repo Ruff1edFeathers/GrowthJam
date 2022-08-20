@@ -31,18 +31,35 @@ public class GameManager : MonoBehaviour
     //Inspector Varibles
     public InputActionAsset m_GameInputAsset;
     public MainMenuUI m_MainMenuUI;
-    public PauseUI m_PauseUI;
+    public PauseUI    m_PauseUI;
+    public HUDUI      m_HUDUI;
 
     //Cached Values
     public InputWrapper m_InputWrapper;
 
     private bool m_Setup;
 
+    public void StartGame()
+    {
+        if(!m_MainMenuUI.m_State)
+        {
+            Debug.LogError("Game should already be running?");
+            return;
+        }
+
+        m_MainMenuUI.SetState(false);
+        m_HUDUI.SetState(true);
+    }
+
     private void OnSetup()
     {
         m_InputWrapper = new InputWrapper(m_GameInputAsset);
 
         m_PauseUI.OnSetup();
+        m_HUDUI.OnSetup();
+
+        PlatformManager.Instance.OnSetup();
+
         m_MainMenuUI.SetState(true);
     }
 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Stats")]
+    public int m_MaxHealth = 5;
+
     //Inspector Values
     [Header("Speeds")]
     public float m_BaseSpeed = 2.5f;
@@ -62,6 +65,7 @@ public class PlayerController : MonoBehaviour
     [System.NonSerialized] public bool    m_Grounded;
     [System.NonSerialized] public Vector3 m_GroundedHit;
     [System.NonSerialized] public Vector3 m_GroundNormal;
+    [System.NonSerialized] public int     m_Health;
 
     public PlayerGroundedState  m_GroundedState;
     public PlayerAirbourneState m_AirbourneState;
@@ -73,9 +77,13 @@ public class PlayerController : MonoBehaviour
         m_AirbourneState = new PlayerAirbourneState(this);
         m_DeadState      = new PlayerDeadState(this);
 
+        m_Health = m_MaxHealth;
         m_Height = m_Collider.height;
+        State    = m_GroundedState;
 
-        State = m_GroundedState;
+        //Update Health UI
+        HUDUI.s_Instance.SetupHealth(m_MaxHealth);
+        HUDUI.s_Instance.UpdateHealth(m_Health);
     }
 
     public void OnUpdate(PlatformManager Manager)

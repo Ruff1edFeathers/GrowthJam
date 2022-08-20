@@ -16,9 +16,4 @@ public class MainMenuUI : MonoBehaviour
         if (m_State) Time.timeScale = 0.0f;
         else Time.timeScale = 1.0f;
     }
-
-    public void PlayGame()
-    {
-        SetState(false);
-    }
 }
