@@ -27,6 +27,11 @@ public class PollingAxis : PollingInput
         m_Value = m_Action.ReadValue<float>();
     }
 
+    public bool HasInput()
+    {
+        return Mathf.Abs(m_Value) > InputSystem.settings.defaultDeadzoneMin;
+    }
+
     public static implicit operator float(PollingAxis Value)
     {
         return Value.m_Value;

@@ -7,7 +7,8 @@ public enum ePlayerFlags
     None        = 0,
     Locomotion  = 1 << 0,
     CanJump     = 1 << 1,
-    CanInteract = 1 << 3
+    CanInteract = 1 << 3,
+    CanCrouch   = 1 << 4
 }
 
 //TODO: Make this control animation that is being played on player
@@ -39,7 +40,7 @@ public class PlayerController : MonoBehaviour
     [Header("Physics")]
     public CapsuleCollider m_Collider;
     public float m_MaxSlopeAngle = 45f;
-    public float m_Friction = 0.25f;
+    public float m_StopFricition = 1.5f;
     public float m_Gravity = 2f;
     public float m_RayCheckOffset = 0.25f;
     public int m_RayCheckCount = 4;
@@ -60,6 +61,8 @@ public class PlayerController : MonoBehaviour
     private PlayerState m_State;
     private SideResults m_Side;
     private float       m_Height;
+    private float       m_Speed;
+    private Vector3     m_Velocity;
     private Vector3     m_Position;
     private bool        m_Grounded;
     private Vector3     m_GroundedHit;
@@ -117,7 +120,7 @@ public class PlayerController : MonoBehaviour
         m_GroundNormal = Hit.normal;
     }
 
-    private Vector3 CheckCollision(Vector3 Velocity)
+    private bool CheckCollision(Vector3 Velocity, out RaycastHit Hit)
     {
         //Check for collision along the projected velocity
         //TODO: Check if hit collision normal is less than the max accepted slope angle
@@ -134,25 +137,27 @@ public class PlayerController : MonoBehaviour
         for(int i = 0; i < m_RayCheckCount; i++)
         {
             Vector3 Origin = m_Position + (Offset * i) + new Vector3(0, Padding, 0);
-            if(Physics.Raycast(Origin, VelDir, out RaycastHit Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+            if(Physics.Raycast(Origin, VelDir, out Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
             {
                 if(Vector3.Angle(Hit.normal, Vector3.up) > m_MaxSlopeAngle)
                 {
-                    //Hit a wall! Bounce off it!
-                    //Todo: Implement :)
-                    Debug.DrawLine(Origin, Hit.point);
-
-                    return Vector3.zero;
+                    return true;
                 }
             }
         }
 
-        return Velocity;
+        Hit = default;
+        return false;
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(0, 0, 200, 25), "Current Speed: " + m_Speed);
     }
 
     private void DoLocomotion()
     {
-        Vector3 Velocity = Vector3.zero;
+        Vector3 NewVelocity = m_Velocity;
         Vector3 NewPosition = m_Position;
 
         //Clamp X & Z position onto platform side
@@ -161,35 +166,80 @@ public class PlayerController : MonoBehaviour
         NewPosition.z = m_Side.Position.z;
 
         //Check if we are both grounded and state wants us to handle locomotion
-        if (m_Grounded && (State.Flags & ePlayerFlags.Locomotion) != 0)
+        if (m_Grounded)
         {
-            //Player is grounded clamp to the ground y position
-            NewPosition.y = m_GroundedHit.y;
-
-            //Calculate Movement along side delta
-            Vector3 Movement = -m_Side.Delta * InputWrapper.GetAxis(eInputAction.Movement);
-            float Movement_Len = Movement.magnitude;
-            Movement = Vector3.Normalize(Movement);
-
-            //Project Movement onto surface normal
-            float SurfaceDot = Vector3.Dot(Movement, m_GroundNormal);
-            Vector3 SurfaceVelocity = Vector3.Normalize(Movement - m_GroundNormal * SurfaceDot) * Movement_Len;
-            Velocity += SurfaceVelocity * m_BaseSpeed;
-
-            //Check if state lets us jump
-            if ((State.Flags & ePlayerFlags.CanJump) != 0 && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
+            if ((State.Flags & ePlayerFlags.Locomotion) != 0)
             {
-                Debug.Log("Jump... Implement :)");
+                //Player is grounded clamp to the ground y position
+                NewPosition.y = m_GroundedHit.y;
+
+                //Claculate Speed
+                PollingAxis MovementAxis = InputWrapper.GetAxis(eInputAction.Movement);
+
+                //Check if the player is pushing on the stick
+                if (MovementAxis.HasInput())
+                {
+                    //Make sure the player is pushing in the same direction
+                    if (Mathf.Abs(m_Speed) < 1f || Mathf.Sign(m_Speed) == Mathf.Sign(MovementAxis.m_Value))
+                    {
+                        //TODO: Play an Animation Here
+                        m_Speed += InputWrapper.GetAxis(eInputAction.Movement) * m_BaseSpeed * Time.deltaTime;
+                        m_Speed = Mathf.Clamp(m_Speed, -m_MaxSpeed, m_MaxSpeed); //Make sure we dont exceed the max speed
+                    }
+                    else
+                    {
+                        //Player has pushed in opisite direction, permform a turn around which results in losing half the speed
+                        //TODO: Play an animation here
+                        m_Speed = -(m_Speed / 2);
+                    }
+                }
+                else
+                {
+                    //TODO: Play an Animation Here
+                    //No input, slow down the speed!
+                    m_Speed -= m_Speed * m_StopFricition * Time.deltaTime;
+                }
+
+                //Calculate Movement along side delta and Project Movement onto surface normal
+                Vector3 Movement = -m_Side.Delta * m_Speed;
+                float Movement_Len = Movement.magnitude;
+                Movement = Vector3.Normalize(Movement);
+
+                float SurfaceDot = Vector3.Dot(Movement, m_GroundNormal);
+                Vector3 SurfaceVelocity = Vector3.Normalize(Movement - m_GroundNormal * SurfaceDot) * Movement_Len;
+
+                if (CheckCollision(NewVelocity, out RaycastHit Hit))
+                {
+                    //We've hit something while grounded... say good bye to your speed
+                    //TODO: Play Animation & Sound effect :)
+                    m_Speed = 0;
+                    SurfaceVelocity = Vector3.zero;
+                }
+
+                NewVelocity = SurfaceVelocity;
+
+                //Check if state lets us jump
+                if ((State.Flags & ePlayerFlags.CanJump) != 0 && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
+                {
+                    Debug.Log("Jump... Implement :)");
+                }
             }
         }
+        else
+        {
+            //Player is airbourne, TODO: Implement :)
 
-        Velocity = CheckCollision(Velocity);
+        }
 
         if (!m_Grounded)
-            Velocity.y -= m_Gravity;
+            NewVelocity.y -= m_Gravity;
+
+        //Calculate this frames velocity and subtract it from the new total
+        Vector3 FrameVelocity = NewVelocity * Time.deltaTime;
+        m_Velocity = NewVelocity - FrameVelocity;
 
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal);
-        transform.position = NewPosition + (Velocity * Time.deltaTime);
+        transform.position = NewPosition + FrameVelocity;
     }
 }
