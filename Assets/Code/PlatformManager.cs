@@ -39,7 +39,7 @@ public class PlatformManager : MonoBehaviour
         m_Controller.OnSetup(this);
     }
 
-    private void Update()
+    public void OnUpdate(GameManager Manager)
     {
         m_Controller.OnUpdate(this);
     }
