@@ -58,6 +58,9 @@ public class PlayerController : MonoBehaviour
     public Sprite m_Airbourne;
     public Sprite m_Hurt;
     public Sprite m_Crouch;
+    public float m_CheerTime = 0.25f;
+    public Sprite m_Cheer0;
+    public Sprite m_Cheer1;
 
     public PlayerState State
     {
@@ -97,6 +100,7 @@ public class PlayerController : MonoBehaviour
     public PlayerAirbourneState m_AirbourneState;
     public PlayerJumpState      m_JumpState;
     public PlayerDeadState      m_DeadState;
+    public PlayerCheerState     m_CheerState;
 
     public void OnSetup()
     {
@@ -104,6 +108,7 @@ public class PlayerController : MonoBehaviour
         m_AirbourneState = new PlayerAirbourneState(this);
         m_JumpState      = new PlayerJumpState(this);
         m_DeadState      = new PlayerDeadState(this);
+        m_CheerState     = new PlayerCheerState(this);
 
         m_Health = m_MaxHealth;
         m_Height = m_Collider.height;
