@@ -7,6 +7,7 @@ public class AnimateEnv : MonoBehaviour
     public Transform[] m_Targets;
     public Transform m_Tracking;
     public float m_StartHeight = 3f;
+    public float m_TrackingPadding = 5f;
     public float m_AnimationSpeed_Min = 0.25f;
     public float m_AnimationSpeed_Max = 0.5f;
     public float m_OriginHeightOffset = -2f;
@@ -27,8 +28,8 @@ public class AnimateEnv : MonoBehaviour
             {
                 Transform child = m_Targets[t].GetChild(c);
 
-                //Only Grab Children which have a renderer under them
-                if (child.GetComponentInChildren<Renderer>() != null)
+                //Only Grab Children which are active and have a renderer under them
+                if (child.gameObject.activeInHierarchy && child.GetComponentInChildren<Renderer>() != null)
                 {
                     AnimData Data = new AnimData(child);
 
@@ -53,7 +54,7 @@ public class AnimateEnv : MonoBehaviour
         {
             AnimData Data = m_Children[i];
 
-            if (Data.m_Position.y < m_LastHeight)
+            if (Data.m_Position.y < m_LastHeight + m_TrackingPadding)
             {
                 //Move Block to be in the center of the tower and activate it
                 Data.m_AnimStartPos      = new Vector3(0, m_LastHeight + m_OriginHeightOffset, 0);
