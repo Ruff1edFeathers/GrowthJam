@@ -46,14 +46,6 @@ public class PlayerGroundedState : PlayerState
             return m_Controller.m_AirbourneState;
         }
 
-        //Calculate Movement along side delta and Project Movement onto surface normal
-        //Vector3 Movement = -Side.Delta * Speed;
-        //float Movement_Len = Movement.magnitude;
-        //Movement = Vector3.Normalize(Movement);
-        //
-        //float SurfaceDot = Vector3.Dot(Movement, Grounded_Normal);
-        //Vector3 SurfaceVelocity = Vector3.Normalize(Movement - Grounded_Normal * SurfaceDot) * Movement_Len;
-
         Vector2 NewVelocity = Velocity;
         NewVelocity.x = Speed;
 

@@ -1,5 +1,37 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1719686595535230821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1461848739493910326}
+  m_Layer: 0
+  m_Name: Offset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1461848739493910326
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1719686595535230821}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4351843140063857138}
+  m_Father: {fileID: 4245724382423561809}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4245724381659684259
 GameObject:
   m_ObjectHideFlags: 0
@@ -26,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 4245724381659684259}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4245724382423561809}
@@ -42,8 +74,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.25
+  m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4245724382423561808
@@ -77,7 +109,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4245724381659684256}
-  - {fileID: 4351843140063857138}
+  - {fileID: 1461848739493910326}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -105,7 +137,8 @@ MonoBehaviour:
   m_Collider: {fileID: 4245724381659684257}
   m_MaxSlopeAngle: 50
   m_StopFricition: 8
-  m_SlideFriction: 0.75
+  m_SlideFriction: 3
+  m_SlideHeightFrac: 0.75
   m_Gravity: 21
   m_RayCheckOffset: 0.25
   m_RayCheckCount: 4
@@ -126,6 +159,7 @@ MonoBehaviour:
   m_Slide: {fileID: 21300000, guid: 75b33563e89f6004d8e1ec73062694f6, type: 3}
   m_Jump: {fileID: 21300000, guid: 4d400a8eeaab3a34381d940cbfc2a87c, type: 3}
   m_Airbourne: {fileID: 21300000, guid: 4d9829d047dd53046964aebe86b55ff1, type: 3}
+  m_Hurt: {fileID: 21300000, guid: f93f0584569a47245a90513f7984775c, type: 3}
 --- !u!54 &7231917272195892505
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -168,12 +202,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4941807039420137098}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4245724382423561809}
-  m_RootOrder: 1
+  m_Father: {fileID: 1461848739493910326}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &276497279358968593
 SpriteRenderer:

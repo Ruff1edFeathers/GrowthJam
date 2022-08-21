@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     public Sprite m_Slide;
     public Sprite m_Jump;
     public Sprite m_Airbourne;
+    public Sprite m_Hurt;
 
     public PlayerState State
     {
@@ -170,8 +171,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        Debug.Log("Take Damage!");
-
         m_Health--;
         HUDUI.s_Instance.UpdateHealth(m_Health);
 
@@ -179,6 +178,7 @@ public class PlayerController : MonoBehaviour
         {
             //We've died?! Change state right away
             State = m_DeadState;
+            GameManager.s_Instance.GameOver();
             return;
         }
 

@@ -14,6 +14,8 @@ public class PlayerDeadState : PlayerState
         Speed = 0;
         Velocity = Vector3.zero;
 
+        CurrentSprite = m_Controller.m_Hurt;
+
         //Play Animation of player falling off platform
         m_Controller.m_Animator.Play(m_Controller.m_DeathAnim.name);
         CameraController.s_Instance.m_State = eCameraState.RotateAround;
