@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private static Vector3[] m_GroundedRayOffsets = new Vector3[5]
+    {
+        new Vector3(0, 0, 0), //Center
+        new Vector3(0, 0, 0.5f), //Forwad
+        new Vector3(-0.5f, 0, 0), //Left
+        new Vector3(0.5f, 0, 0), //Right
+        new Vector3(0, 0, -0.5f), //Back
+    };
+
     [Header("Stats")]
     public int m_MaxHealth = 5;
     public float m_DamageGracePeroid = 2f;
@@ -183,19 +192,38 @@ public class PlayerController : MonoBehaviour
     }
 
     public void CheckGrounded()
-    { 
+    {
         //Check if the player is grounded
-        //TODO: Multiple Casts and get the average normal for smoother movement?!
-        Vector3 RayOffset = new Vector3(0, m_RayCheckOffset / 2f, 0);
-        if (!Physics.Raycast(m_Position + RayOffset, -RayOffset, out RaycastHit Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+
+        Vector3 m_AvgNormal = Vector3.zero;
+        Vector3 m_AvgPoint  = Vector3.zero;
+        int     m_HitCount  = 0;
+
+        Vector3 RayOffset_Y = new Vector3(0, m_RayCheckOffset / 2f, 0);
+        int GroundChecks_Len = m_GroundedRayOffsets.Length;
+        for(int i = 0; i < GroundChecks_Len; i++)
         {
-            m_Grounded = false;
-            return;
+            Vector3 RayOrigin = m_Position;
+            RayOrigin += m_GroundedRayOffsets[i] * m_Collider.radius;
+            RayOrigin += RayOffset_Y;
+
+            if (Physics.Raycast(RayOrigin, -RayOffset_Y, out RaycastHit Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
+            {
+                Debug.DrawRay(RayOrigin, -RayOffset_Y, Color.green);
+
+                m_AvgNormal += Hit.normal;
+                m_AvgPoint  += Hit.point;
+                m_HitCount++;
+            }
+            else
+            {
+                Debug.DrawRay(RayOrigin, -RayOffset_Y, Color.red);
+            }
         }
 
-        m_Grounded     = true;
-        m_GroundedHit  = Hit.point;
-        m_GroundNormal = Hit.normal;
+        m_Grounded     = m_HitCount > 0;
+        m_GroundedHit  = m_AvgPoint / m_HitCount;
+        m_GroundNormal = m_AvgNormal / m_HitCount;
     }
 
     public bool CheckCollision(Vector2 Velocity, out RaycastHit Hit)

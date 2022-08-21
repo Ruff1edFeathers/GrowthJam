@@ -61,6 +61,7 @@ public class PlayerGroundedState : PlayerState
 
         Vector2 NewVelocity = Velocity;
         NewVelocity.x = Speed;
+        NewVelocity.y = 0; //Remove Y Velocity as we are grounded
 
         if (m_Controller.CheckCollision(NewVelocity, out RaycastHit Hit))
         {
