@@ -115,6 +115,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 6d73bb5a2883dd649a96c0c186ee4966,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e6e154e4538bec46a29b071545ec80b, type: 2}
     - target: {fileID: 919132149155446097, guid: 6d73bb5a2883dd649a96c0c186ee4966,
         type: 3}
       propertyPath: m_Name
@@ -139,18 +144,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 337707965996816846}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8985485196679826750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 607614636669428895}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a32b31371a7f4c4194d07ab0c7c835d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &6521165222028654515
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -164,6 +157,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7085686, y: 0.15087277, z: 0.7077887}
   m_Center: {x: 0, y: 0.17456362, z: 0.0023052692}
+--- !u!114 &8985485196679826750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607614636669428895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a32b31371a7f4c4194d07ab0c7c835d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &337707966701937552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -226,6 +231,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 63769e9df12546e4fbe2164159840ab1,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e6e154e4538bec46a29b071545ec80b, type: 2}
     - target: {fileID: 919132149155446097, guid: 63769e9df12546e4fbe2164159840ab1,
         type: 3}
       propertyPath: m_Name
