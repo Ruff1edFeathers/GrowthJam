@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerJumpState : PlayerState
+public class PlayerJumpState : PlayerAirbourneState
 {
     public PlayerJumpState(PlayerController Controller) : base(Controller) {}
 
@@ -10,8 +10,6 @@ public class PlayerJumpState : PlayerState
 
     public override void OnEnter()
     {
-        base.OnEnter();
-        
         //Force Grounded to be false since we are about to jump
         Grounded  = false;
         Velocity += new Vector2(0, m_JumpForce);
@@ -21,34 +19,8 @@ public class PlayerJumpState : PlayerState
 
     public override PlayerState OnUpdate()
     {
-        //Check if we are grounded after short grace peroid
-        if (m_TimeInState > 1 && Grounded)
-            return m_Controller.m_GroundedState;
-
-        Vector2 NewVelocity = Velocity;
-
-        //Subtract gravity
-        NewVelocity -= new Vector2(0, m_Controller.m_Gravity * Time.deltaTime);
-
-        //Ensure X Velocity stays consistant whilst jumping
-        NewVelocity.x = Speed;
-
-        if (m_Controller.CheckCollision(Velocity, out RaycastHit Hit))
-        {
-            //Surface normal is in the opposite direction of the velocity, bounce of it!
-            if(Vector2.Dot(Velocity.normalized, Hit.normal) < 0.0f)
-            {
-                NewVelocity.x = -NewVelocity.x;
-                Speed         = -Speed; //Invert speed as well to make sure when we land we resume in that direction
-            }
-
-            //TODO Check if you've hit your head
-        }
-
         if (Velocity.y < 0.0f)
             return m_Controller.m_AirbourneState;
-
-        Velocity = NewVelocity;
 
         return base.OnUpdate();
     }
@@ -74,16 +46,16 @@ public class PlayerAirbourneState : PlayerState
 
         Vector2 NewVelocity = Velocity;
 
+        //Subtract gravity
         NewVelocity -= new Vector2(0, m_Controller.m_Gravity * Time.deltaTime);
 
-        if (m_Controller.CheckCollision(Velocity, out RaycastHit Hit))
+        //Ensure X Velocity stays consistant whilst jumping
+        NewVelocity.x = Speed + (InputWrapper.GetAxis(eInputAction.Movement) * m_Controller.m_AirbourneSpeed);
+
+        if (m_Controller.CheckCollision(new Vector3(NewVelocity.x, 0), out RaycastHit Hit))
         {
-            //Surface normal is in the opposite direction of the velocity, bounce of it!
-            if (Vector2.Dot(Velocity.normalized, Hit.normal) < 0.0f)
-            {
-                NewVelocity.x = -NewVelocity.x;
-                Speed = -Speed; //Invert speed as well to make sure when we land we resume in that direction
-            }
+            NewVelocity.x = -NewVelocity.x;
+            Speed = -(Speed / 2.0f); //Invert speed as well to make sure when we land we resume in that direction
         }
 
         Velocity = NewVelocity;

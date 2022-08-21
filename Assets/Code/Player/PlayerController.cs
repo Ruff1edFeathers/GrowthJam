@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public float m_JumpForce = 20;
     public float m_SlideMargin = 3f;
     public float m_CrouchSpeed = 1.5f;
+    public float m_AirbourneSpeed = 0.5f;
 
     [Header("Physics")]
     public CapsuleCollider m_Collider;
