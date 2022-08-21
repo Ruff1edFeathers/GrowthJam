@@ -59,7 +59,6 @@ public class SpikeTrap : MonoBehaviour
                 Vector3 ShakeOffset = Random.insideUnitSphere * m_Shake_Strength;
                 ShakeOffset.y = 0;
 
-                Debug.Log("Shake Offset: " + m_Timer);
                 m_SpikesClosed.transform.localPosition = ShakeOffset;
             }
 

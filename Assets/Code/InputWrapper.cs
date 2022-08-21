@@ -84,6 +84,7 @@ public enum eInputAction
     Jump,
     Pause,
     Run,
+    Slide,
     Total
 }
 
@@ -124,6 +125,7 @@ public class InputWrapper
         m_Value[(int)eInputAction.Jump]     = new PollingButton(Asset.FindAction("Jump"));
         m_Value[(int)eInputAction.Pause]    = new PollingButton(Asset.FindAction("Pause"));
         m_Value[(int)eInputAction.Run]      = new PollingButton(Asset.FindAction("Run"));
+        m_Value[(int)eInputAction.Slide]    = new PollingButton(Asset.FindAction("Slide"));
 
         Asset.Enable();
         InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;

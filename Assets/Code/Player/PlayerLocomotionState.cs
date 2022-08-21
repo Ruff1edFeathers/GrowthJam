@@ -16,17 +16,19 @@ public class PlayerGroundedSubState : PlayerState
 //State for grounded movement & idle?
 public class PlayerGroundedState : PlayerState
 {
-    public PlayerIdleState m_IdleState;
-    public PlayerMoveState m_MoveState;
-    public PlayerSkidState m_SkidState;
-    public PlayerStopState m_StopState;
+    public PlayerIdleState  m_IdleState;
+    public PlayerMoveState  m_MoveState;
+    public PlayerSkidState  m_SkidState;
+    public PlayerStopState  m_StopState;
+    public PlayerSlideState m_SlideState;
 
     public PlayerGroundedState(PlayerController Controller) : base(Controller)
     {
-        m_IdleState = new PlayerIdleState(this);
-        m_MoveState = new PlayerMoveState(this);
-        m_SkidState = new PlayerSkidState(this);
-        m_StopState = new PlayerStopState(this);
+        m_IdleState  = new PlayerIdleState(this);
+        m_MoveState  = new PlayerMoveState(this);
+        m_SkidState  = new PlayerSkidState(this);
+        m_StopState  = new PlayerStopState(this);
+        m_SlideState = new PlayerSlideState(this);
     }
 
     public override void OnEnter()
@@ -61,7 +63,6 @@ public class PlayerGroundedState : PlayerState
             //TODO: Play Animation & Sound effect :)
             Speed = 0;
             NewVelocity = Vector2.zero;
-            Debug.Log("Hit Something");
         }
 
         Velocity = NewVelocity;
@@ -131,6 +132,12 @@ public class PlayerMoveState : PlayerGroundedSubState
             SkidState.m_StartSpeed = Speed;
             SkidState.m_TargetSpeed = Speed / 2;
             return SkidState;
+        }
+
+        if(Mathf.Abs(Speed) > m_Controller.m_SlideMargin && InputWrapper.GetButtonState(eInputAction.Slide).IsPressedOrHeld())
+        {
+            //Slidin Time!
+            return m_GroundedState.m_SlideState;
         }
 
         //Check if the player is pushing on the stick
@@ -222,6 +229,7 @@ public class PlayerStopState : PlayerGroundedSubState
 {
     public PlayerStopState(PlayerGroundedState GroundedState) : base(GroundedState) { }
 
+
     public override void OnEnter()
     {
         base.OnEnter();
@@ -245,5 +253,57 @@ public class PlayerStopState : PlayerGroundedSubState
             return m_GroundedState.m_MoveState;
 
         return base.OnUpdate();
+    }
+}
+
+public class PlayerSlideState : PlayerGroundedSubState
+{
+    public PlayerSlideState(PlayerGroundedState GroundedState) : base(GroundedState) { }
+
+    private float m_ColliderOffset;
+    private float m_ColliderHeight;
+
+    private void SetupCollider(float Offset, float Height)
+    {
+        Vector3 NewCenter = m_Controller.m_Collider.center;
+        NewCenter.y = Offset;
+        m_Controller.m_Collider.center = NewCenter;
+        m_Controller.m_Collider.height = Height;
+    }
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        CurrentSprite = m_Controller.m_Slide;
+
+        //Cache Collider Setup
+        m_ColliderHeight = m_Controller.m_Collider.height;
+        m_ColliderOffset = m_Controller.m_Collider.center.y;
+
+        float NewHeight = m_ColliderHeight * m_Controller.m_SlideHeightFrac;
+        SetupCollider(m_ColliderOffset - (NewHeight / 2.0f), NewHeight);
+    }
+
+    public override PlayerState OnUpdate()
+    {
+        //Remove speed whilst sliding
+        Speed += m_Controller.m_SlideFriction * Time.deltaTime * -Mathf.Sign(Speed);
+
+        //Check if we've lost too much speed to slide or if we've stopped holding the slide button
+        if(Mathf.Abs(Speed) < m_Controller.m_SlideMargin || InputWrapper.GetButtonState(eInputAction.Slide).IsReleased())
+        {
+            return m_GroundedState.m_MoveState;
+        }
+
+        return base.OnUpdate();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+
+        //Restore Collider Setup
+        SetupCollider(m_ColliderOffset, m_ColliderHeight);
     }
 }

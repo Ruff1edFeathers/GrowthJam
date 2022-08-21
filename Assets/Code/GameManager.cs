@@ -62,6 +62,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        //Disable Camera
+        CameraController.s_Instance.m_State = eCameraState.None;
+
         m_HUDUI.SetState(false);
         m_GameOverUI.SetActive(true);
         m_GameOver = true;
@@ -104,6 +107,6 @@ public class GameManager : MonoBehaviour
         }
 
         //Run Main Game Loop
-        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State && !m_GameOver);
+        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State);
     }
 }

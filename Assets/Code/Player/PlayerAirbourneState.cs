@@ -58,6 +58,13 @@ public class PlayerAirbourneState : PlayerState
     {
     }
 
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        CurrentSprite = m_Controller.m_Airbourne;
+    }
+
     public override PlayerState OnUpdate()
     {
         if (Grounded)

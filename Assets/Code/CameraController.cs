@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum eCameraState
 {
+    None,
     RotateAround,
     TrackTarget,
 }

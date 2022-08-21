@@ -16,11 +16,15 @@ public class PlayerController : MonoBehaviour
     public float m_SkidSpeed = 2f;
     public float m_StopDelay = 0.25f;
     public float m_JumpForce = 20;
+    public float m_SlideMargin = 3f;
 
     [Header("Physics")]
     public CapsuleCollider m_Collider;
     public float m_MaxSlopeAngle = 45f;
     public float m_StopFricition = 1.5f;
+    public float m_SlideFriction = 0.75f;
+    [Range(0f, 1f)]
+    public float m_SlideHeightFrac = 0.75f;
     public float m_Gravity = 2f;
     public float m_RayCheckOffset = 0.25f;
     public int m_RayCheckCount = 4;
@@ -217,10 +221,15 @@ public class PlayerController : MonoBehaviour
             Vector3 Origin = m_Position + (Offset * i) + new Vector3(0, Padding, 0);
             if(Physics.Raycast(Origin, VelDir, out Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
             {
-                if(Vector3.Angle(Hit.normal, Vector3.up) > m_MaxSlopeAngle)
+                Debug.DrawRay(Origin, VelDir, Color.green);
+                if (Vector3.Angle(Hit.normal, Vector3.up) > m_MaxSlopeAngle)
                 {
                     return true;
                 }
+            }
+            else
+            {
+                Debug.DrawRay(Origin, VelDir, Color.red);
             }
         }
 
