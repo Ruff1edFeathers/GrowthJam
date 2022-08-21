@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     public static CameraController s_Instance { get; private set; }
 
     public Transform m_TrackingTarget;
+    public float     m_MoveSpeed = 2.0f;
     public float     m_RotationSpeed = 2.0f;
     public float     m_PitchRot = 30;
     public float     m_YOffset = 5;
@@ -47,14 +48,17 @@ public class CameraController : MonoBehaviour
 
             case eCameraState.TrackTarget:
                 {
-                    Vector3 CurrentDir  = Vector3.Normalize(Flatten(transform.position));
-                    Vector3 TrackingDir = Vector3.Normalize(Flatten(m_TrackingTarget.position));
+                    Vector3 CurrentPos  = transform.position;
+                    Vector3 TrackingPos = m_TrackingTarget.position;
+                    Vector3 CurrentDir  = Vector3.Normalize(Flatten(CurrentPos));
+                    Vector3 TrackingDir = Vector3.Normalize(Flatten(TrackingPos));
 
                     Quaternion CurrentRot = Quaternion.LookRotation(-CurrentDir);
                     Quaternion TargetRot  = Quaternion.LookRotation(-TrackingDir);
                     Quaternion NewRot     = Quaternion.Lerp(CurrentRot, TargetRot, Time.unscaledDeltaTime * m_RotationSpeed);
 
-                    Vector3 NewPos = (Vector3.Normalize(NewRot * Vector3.back) * m_ZOffset) + new Vector3(0, m_YOffset, 0);
+                    float   TargetY = Mathf.Lerp(CurrentPos.y, TrackingPos.y + m_YOffset, Time.unscaledDeltaTime * m_MoveSpeed);
+                    Vector3 NewPos  = (Vector3.Normalize(NewRot * Vector3.back) * m_ZOffset) + new Vector3(0, TargetY, 0);
 
                     transform.position = NewPos;
                     transform.rotation = NewRot * m_OffsetRot;

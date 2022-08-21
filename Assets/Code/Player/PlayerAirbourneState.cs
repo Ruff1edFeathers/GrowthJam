@@ -72,8 +72,21 @@ public class PlayerAirbourneState : PlayerState
         if (Grounded)
             return m_Controller.m_GroundedState;
 
-        //Fall
-        Velocity -= new Vector2(0, m_Controller.m_Gravity * Time.deltaTime);
+        Vector2 NewVelocity = Velocity;
+
+        NewVelocity -= new Vector2(0, m_Controller.m_Gravity * Time.deltaTime);
+
+        if (m_Controller.CheckCollision(Velocity, out RaycastHit Hit))
+        {
+            //Surface normal is in the opposite direction of the velocity, bounce of it!
+            if (Vector2.Dot(Velocity.normalized, Hit.normal) < 0.0f)
+            {
+                NewVelocity.x = -NewVelocity.x;
+                Speed = -Speed; //Invert speed as well to make sure when we land we resume in that direction
+            }
+        }
+
+        Velocity = NewVelocity;
 
         return base.OnUpdate();
     }
