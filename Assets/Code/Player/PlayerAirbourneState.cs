@@ -28,9 +28,7 @@ public class PlayerJumpState : PlayerAirbourneState
 
 public class PlayerAirbourneState : PlayerState
 {
-    public PlayerAirbourneState(PlayerController Controller) : base(Controller)
-    {
-    }
+    public PlayerAirbourneState(PlayerController Controller) : base(Controller) {}
 
     public override void OnEnter()
     {
@@ -42,7 +40,9 @@ public class PlayerAirbourneState : PlayerState
     public override PlayerState OnUpdate()
     {
         if (Grounded)
+        {
             return m_Controller.m_GroundedState;
+        }
 
         Vector2 NewVelocity = Velocity;
 

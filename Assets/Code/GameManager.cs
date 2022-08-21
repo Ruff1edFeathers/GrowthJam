@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         m_AnimatePlants.OnSetup();
 
         m_MainMenuUI.SetState(true);
-        m_PlayerSpawnTimer = 4f;
+        m_PlayerSpawnTimer = 5f;
     }
 
     //Master Game Loop
@@ -91,6 +91,7 @@ public class GameManager : MonoBehaviour
         m_CameraController.OnUpdate();
 
         SpikeTrap.UpdateTraps();
+        SlidingPlatform.UpdatePlatforms();
 
         m_AnimateEnv.OnUpdate();
         m_AnimatePlants.OnUpdate(m_PlayerController);

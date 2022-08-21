@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour
     //Cached Values
     private PlayerState m_State;
     private float m_DamgeGraceTimer;
+    private float m_FallTime;
 
     public SideResults m_Side;
     [System.NonSerialized] public float   m_Height;
@@ -163,6 +164,18 @@ public class PlayerController : MonoBehaviour
                 return; //No State nothing to do
         }
 
+        if(NewState == m_AirbourneState)
+        {
+            if(m_Velocity.y < 0.0f)
+                m_FallTime += Time.deltaTime;
+        }
+        else
+        {
+            if (m_FallTime > 0.75f)
+                TakeDamage();
+            m_FallTime = 0.0f;
+        }
+
         //Calculate this frames velocity and subtract it from the new total
         Vector2 FrameVelocity = m_Velocity * Time.deltaTime;
         m_Velocity -= FrameVelocity;
@@ -173,6 +186,15 @@ public class PlayerController : MonoBehaviour
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal); //TODO: These rotations can be pre-calculated
         transform.position = m_Position;
+    }
+
+    public void AddHeart()
+    {
+        m_Health++;
+        m_MaxHealth++;
+
+        HUDUI.s_Instance.SetupHealth(m_MaxHealth);
+        HUDUI.s_Instance.UpdateHealth(m_Health);
     }
 
     public void TakeDamage()

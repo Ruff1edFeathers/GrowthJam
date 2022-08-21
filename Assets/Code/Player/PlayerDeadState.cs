@@ -31,7 +31,7 @@ public class PlayerDeadState : PlayerState
         //Respawn
         Position = m_Controller.m_RespawnPoint;
         m_Controller.m_Health = m_Controller.m_MaxHealth;
-        HUDUI.s_Instance.UpdateHealth(m_Controller.m_MaxHealth);
+        HUDUI.s_Instance.UpdateHealth(m_Controller.m_Health);
 
         return m_Controller.m_GroundedState;
     }
