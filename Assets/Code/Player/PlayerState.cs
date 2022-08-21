@@ -29,7 +29,11 @@ public class PlayerState
 
     public SideResults Side { get { return m_Controller.m_Side; } }
 
-    public Vector3 Position { get { return m_Controller.m_Position; } }
+    public Vector3 Position
+    {
+        get { return m_Controller.m_Position; }
+        set { m_Controller.m_Position = value; } 
+    }
 
     public Vector2 Velocity
     {

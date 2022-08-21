@@ -8,6 +8,7 @@ public class AnimateEnv : MonoBehaviour
     public Transform m_Tracking;
     public float m_StartHeight = 3f;
     public float m_TrackingPadding = 5f;
+    public float m_AnimationMaxDelay = 0.5f;
     public float m_AnimationSpeed_Min = 0.25f;
     public float m_AnimationSpeed_Max = 0.5f;
     public float m_OriginHeightOffset = -2f;
@@ -60,6 +61,7 @@ public class AnimateEnv : MonoBehaviour
                 Data.m_AnimStartPos      = new Vector3(0, m_LastHeight + m_OriginHeightOffset, 0);
                 Data.m_AnimStartRotation = Random.rotation;
                 Data.m_AnimSpeed         = Random.Range(m_AnimationSpeed_Min, m_AnimationSpeed_Max);
+                Data.m_AnimDelayTimer    = Random.value * m_AnimationMaxDelay;
 
                 Data.m_Target.position   = Data.m_AnimStartPos;
                 Data.m_Target.rotation   = Data.m_AnimStartRotation;
@@ -81,6 +83,13 @@ public class AnimateEnv : MonoBehaviour
         for (int i = m_Animatings.Count - 1; i >= 0; i--)
         {
             AnimData Data = m_Animatings[i];
+            if(Data.m_AnimDelayTimer > 0.0f)
+            {
+                Data.m_AnimDelayTimer -= Time.deltaTime;
+                m_Animatings[i] = Data;
+                continue;
+            }
+
             Data.m_AnimAlpha += Data.m_AnimSpeed * Time.deltaTime;
 
             Vector3 NewPosition;
@@ -128,6 +137,7 @@ public class AnimateEnv : MonoBehaviour
         public Quaternion m_AnimStartRotation;
         public float   m_AnimSpeed;
         public float   m_AnimAlpha;
+        public float m_AnimDelayTimer;
 
         public AnimData(Transform Target)
         {
@@ -140,6 +150,7 @@ public class AnimateEnv : MonoBehaviour
             m_AnimStartRotation = Quaternion.identity;
             m_AnimSpeed    = 0;
             m_AnimAlpha    = 0;
+            m_AnimDelayTimer = 0;
         }
     }
 }

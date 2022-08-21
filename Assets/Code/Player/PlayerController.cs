@@ -90,13 +90,14 @@ public class PlayerController : MonoBehaviour
     [System.NonSerialized] public Vector3 m_GroundedHit;
     [System.NonSerialized] public Vector3 m_GroundNormal;
     [System.NonSerialized] public int     m_Health;
+    [System.NonSerialized] public Vector3 m_RespawnPoint;
 
     public PlayerGroundedState  m_GroundedState;
     public PlayerAirbourneState m_AirbourneState;
     public PlayerJumpState      m_JumpState;
     public PlayerDeadState      m_DeadState;
 
-    public void OnSetup(PlatformManager Manager)
+    public void OnSetup()
     {
         m_GroundedState  = new PlayerGroundedState(this);
         m_AirbourneState = new PlayerAirbourneState(this);
@@ -107,9 +108,14 @@ public class PlayerController : MonoBehaviour
         m_Height = m_Collider.height;
         State    = m_GroundedState;
 
+        m_RespawnPoint = transform.position;
+
         //Update Health UI
         HUDUI.s_Instance.SetupHealth(m_MaxHealth);
         HUDUI.s_Instance.UpdateHealth(m_Health);
+
+        //Hide self for abit
+        gameObject.SetActive(false);
     }
 
     public void OnUpdate(PlatformManager Manager)
@@ -184,7 +190,6 @@ public class PlayerController : MonoBehaviour
         {
             //We've died?! Change state right away
             State = m_DeadState;
-            GameManager.s_Instance.GameOver();
             return;
         }
 

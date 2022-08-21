@@ -11,7 +11,6 @@ public class MainMenuUI : MonoBehaviour
         m_State = Visible;
 
         gameObject.SetActive(m_State);
-        CameraController.s_Instance.m_State = m_State ? eCameraState.RotateAround : eCameraState.TrackTarget;
 
         if (m_State) Time.timeScale = 0.0f;
         else Time.timeScale = 1.0f;

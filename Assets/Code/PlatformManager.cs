@@ -17,10 +17,6 @@ public class PlatformManager : MonoBehaviour
     public static PlatformManager Instance { get; private set; }
 
     //Inspector Varibles
-    public CameraController m_CameraController;
-    public PlayerController m_PlayerController;
-    public AnimateEnv       m_AnimateEnv;
-    public AnimatePlants    m_AnimatePlants;
     public Transform[]      m_ControlPoints = new Transform[2];
 
     struct SideData
@@ -39,27 +35,6 @@ public class PlatformManager : MonoBehaviour
     public void OnSetup()
     {
         CalculatePlatformSides();
-
-        m_PlayerController.OnSetup(this);
-        m_CameraController.OnSetup();
-        m_AnimateEnv.OnSetup();
-        m_AnimatePlants.OnSetup();
-    }
-
-    public void OnUpdate(bool RunGame)
-    {
-        if (RunGame)
-        {
-            m_PlayerController.OnUpdate(this);
-
-            SpikeTrap.UpdateTraps();
-
-            m_AnimateEnv.OnUpdate();
-            m_AnimatePlants.OnUpdate(m_PlayerController);
-        }
-
-        //Camera Controller should still update, IE if we are in the main menu
-        m_CameraController.OnUpdate();
     }
 
     private void CalculatePlatformSides()

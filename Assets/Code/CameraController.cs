@@ -18,10 +18,10 @@ public class CameraController : MonoBehaviour
     public float     m_YOffset = 5;
     public float     m_ZOffset = 15;
 
-    public eCameraState m_State;
+    [System.NonSerialized]
+    public eCameraState m_State = eCameraState.RotateAround;
 
     private Quaternion m_OffsetRot;
-    private Quaternion m_StartRot;
     private float m_Rotation;
 
     public void OnSetup()

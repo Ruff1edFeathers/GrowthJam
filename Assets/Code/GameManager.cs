@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,39 +5,21 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager s_Instance { get; private set; }
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Init()
-    {
-        //Load GameManager Prefab, Initialize and place it in DontDestoryOnLoad
-        GameObject GameManager_Prefab = Resources.Load<GameObject>("PF_GameManager");
-        if(GameManager_Prefab == null)
-        {
-            Debug.LogError("Failed to load GameManager Prefab, something has gone wrong?!");
-            return;
-        }
-
-        GameObject GameManager_Instance = Instantiate(GameManager_Prefab);
-        DontDestroyOnLoad(GameManager_Instance);
-        s_Instance = GameManager_Instance.GetComponent<GameManager>();
-
-        if(s_Instance == null)
-        {
-            Debug.LogError("Initalized GameManager without a GameManager Component?!");
-        }
-    }
-
     //Inspector Varibles
     public InputActionAsset m_GameInputAsset;
     public MainMenuUI m_MainMenuUI;
-    public PauseUI    m_PauseUI;
     public HUDUI      m_HUDUI;
-    public GameObject m_GameOverUI;
+    public PlatformManager m_PlatformManager;
+    public CameraController m_CameraController;
+    public PlayerController m_PlayerController;
+    public AnimateEnv m_AnimateEnv;
+    public AnimatePlants m_AnimatePlants;
 
     //Cached Values
     public InputWrapper m_InputWrapper;
 
-    private bool m_Setup;
-    private bool m_GameOver;
+    private bool  m_Setup;
+    private float m_PlayerSpawnTimer;
 
     public void StartGame()
     {
@@ -50,36 +30,28 @@ public class GameManager : MonoBehaviour
         }
 
         m_MainMenuUI.SetState(false);
-        m_HUDUI.SetState(true);
-        m_GameOverUI.SetActive(false);
     }
 
-    public void GameOver()
+    private void Awake()
     {
-        if(m_GameOver)
-        {
-            Debug.LogError("Game Over has already been triggered");
-            return;
-        }
-
-        //Disable Camera
-        CameraController.s_Instance.m_State = eCameraState.None;
-
-        m_HUDUI.SetState(false);
-        m_GameOverUI.SetActive(true);
-        m_GameOver = true;
+        s_Instance = this;
     }
 
-    private void OnSetup()
+    private void Start()
     {
+        s_Instance     = this;
         m_InputWrapper = new InputWrapper(m_GameInputAsset);
 
-        m_PauseUI.OnSetup();
-        m_HUDUI.OnSetup();
+        m_PlatformManager.OnSetup();
 
-        PlatformManager.Instance.OnSetup();
+        m_HUDUI.OnSetup();
+        m_PlayerController.OnSetup();
+        m_CameraController.OnSetup();
+        m_AnimateEnv.OnSetup();
+        m_AnimatePlants.OnSetup();
 
         m_MainMenuUI.SetState(true);
+        m_PlayerSpawnTimer = 4f;
     }
 
     //Master Game Loop
@@ -87,26 +59,40 @@ public class GameManager : MonoBehaviour
     {
         if(!m_Setup)
         {
-            OnSetup();
             m_Setup = true;
         }
 
         //Grab Inputs before anything else
         m_InputWrapper.OnUpdate();
 
-        if (m_GameOver)
-            return;
-
-        //Only update pause UI when we aren't show the Main Menu UI
-        if (!m_MainMenuUI.m_State)
+        if (m_MainMenuUI.m_State)
         {
-            m_PauseUI.OnUpdate();
-
-            if (m_PauseUI.m_State)
-                return;
+            m_CameraController.OnUpdate();
+            return;
         }
 
-        //Run Main Game Loop
-        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State);
+        if (m_PlayerSpawnTimer > 0.0f)
+        {
+            m_PlayerSpawnTimer -= Time.deltaTime;
+
+            if (m_PlayerSpawnTimer <= 0.0f)
+            {
+                //Show Player
+                m_PlayerController.gameObject.SetActive(true);
+                m_HUDUI.SetState(true);
+                m_CameraController.m_State = eCameraState.TrackTarget;
+            }
+        }
+        else
+        {
+            m_PlayerController.OnUpdate(m_PlatformManager);
+        }
+
+        m_CameraController.OnUpdate();
+
+        SpikeTrap.UpdateTraps();
+
+        m_AnimateEnv.OnUpdate();
+        m_AnimatePlants.OnUpdate(m_PlayerController);
     }
 }
