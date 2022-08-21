@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: m_Water
+  m_Name: m_Purple
   m_Shader: {fileID: -6465566751694194690, guid: 6ebd85a4ff24a5a46ae5d6d8d19bb522,
     type: 3}
   m_ValidKeywords: []
@@ -23,12 +23,12 @@ Material:
     m_TexEnvs:
     - Texture2D_341B7F9B:
         m_Texture: {fileID: 2800000, guid: d8f1deefd76bfb546ad7dcbd631d408e, type: 3}
-        m_Scale: {x: 10, y: 10}
+        m_Scale: {x: 0.01, y: 0.01}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: d8f1deefd76bfb546ad7dcbd631d408e, type: 3}
-        m_Scale: {x: 20, y: 20}
-        m_Offset: {x: 0.012504378, y: 0.014185978}
+        m_Scale: {x: 0.025, y: 0.025}
+        m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_3534CE37_Texture_1:
         m_Texture: {fileID: 2800000, guid: e9bc9f9cfe383be439496ea2117945da, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -124,7 +124,7 @@ Material:
     - Vector1_969C2FF3: 0.9
     - Vector1_9905021E: 1
     - Vector1_9D379C79: 0.2
-    - Vector1_C5294D52: 0.315
+    - Vector1_C5294D52: 0.9
     - Vector1_C982B9BB: 0.78
     - Vector1_CED9145E: 0.0338
     - Vector1_D373E050: 0.126
@@ -138,7 +138,7 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - Color_3D923A29: {r: 0.051886797, g: 0.7640556, b: 1, a: 1}
+    - Color_3D923A29: {r: 1, g: 0.1462264, b: 0.59024405, a: 1}
     - Vector3_366279BE: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7626750117508379865

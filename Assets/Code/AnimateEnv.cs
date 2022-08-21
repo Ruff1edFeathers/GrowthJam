@@ -18,7 +18,7 @@ public class AnimateEnv : MonoBehaviour
     private List<AnimData> m_Children   = new List<AnimData>();
     private List<AnimData> m_Animatings = new List<AnimData>();
 
-    private void Awake()
+    public void OnSetup()
     {
         int Targets_Len = m_Targets.Length;
         for(int t = 0; t < Targets_Len; t++)
@@ -105,7 +105,7 @@ public class AnimateEnv : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void OnUpdate()
     {
         UpdateAnimations();
 

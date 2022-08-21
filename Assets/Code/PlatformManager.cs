@@ -19,6 +19,8 @@ public class PlatformManager : MonoBehaviour
     //Inspector Varibles
     public CameraController m_CameraController;
     public PlayerController m_PlayerController;
+    public AnimateEnv       m_AnimateEnv;
+    public AnimatePlants    m_AnimatePlants;
     public Transform[]      m_ControlPoints = new Transform[2];
 
     struct SideData
@@ -40,6 +42,8 @@ public class PlatformManager : MonoBehaviour
 
         m_PlayerController.OnSetup(this);
         m_CameraController.OnSetup();
+        m_AnimateEnv.OnSetup();
+        m_AnimatePlants.OnSetup();
     }
 
     public void OnUpdate(bool RunGame)
@@ -53,6 +57,9 @@ public class PlatformManager : MonoBehaviour
         m_CameraController.OnUpdate();
 
         SpikeTrap.UpdateTraps();
+
+        m_AnimateEnv.OnUpdate();
+        m_AnimatePlants.OnUpdate(m_PlayerController);
     }
 
     private void CalculatePlatformSides()
