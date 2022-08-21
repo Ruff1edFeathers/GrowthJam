@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerGroundedSubState : PlayerState
 {
@@ -11,24 +12,36 @@ public class PlayerGroundedSubState : PlayerState
     {
         m_GroundedState = GroundedState;
     }
+
+    protected void SetupCollider(float Offset, float Height)
+    {
+        Vector3 NewCenter = m_Controller.m_Collider.center;
+        NewCenter.y = Offset;
+        m_Controller.m_Collider.center = NewCenter;
+        m_Controller.m_Collider.height = Height;
+    }
 }
 
 //State for grounded movement & idle?
 public class PlayerGroundedState : PlayerState
 {
-    public PlayerIdleState  m_IdleState;
-    public PlayerMoveState  m_MoveState;
-    public PlayerSkidState  m_SkidState;
-    public PlayerStopState  m_StopState;
-    public PlayerSlideState m_SlideState;
+    public PlayerIdleState       m_IdleState;
+    public PlayerCrouchIdleState m_IdleCrouchState;
+    public PlayerMoveState       m_MoveState;
+    public PlayerSkidState       m_SkidState;
+    public PlayerStopState       m_StopState;
+    public PlayerSlideState      m_SlideState;
+    public PlayerCrouchMoveState m_CrouchState;
 
     public PlayerGroundedState(PlayerController Controller) : base(Controller)
     {
-        m_IdleState  = new PlayerIdleState(this);
-        m_MoveState  = new PlayerMoveState(this);
-        m_SkidState  = new PlayerSkidState(this);
-        m_StopState  = new PlayerStopState(this);
-        m_SlideState = new PlayerSlideState(this);
+        m_IdleState       = new PlayerIdleState(this);
+        m_IdleCrouchState = new PlayerCrouchIdleState(this);
+        m_MoveState       = new PlayerMoveState(this);
+        m_SkidState       = new PlayerSkidState(this);
+        m_StopState       = new PlayerStopState(this);
+        m_SlideState      = new PlayerSlideState(this);
+        m_CrouchState     = new PlayerCrouchMoveState(this);
     }
 
     public override void OnEnter()
@@ -90,6 +103,10 @@ public class PlayerIdleState : PlayerGroundedSubState
         if (InputWrapper.GetAxis(eInputAction.Movement).HasInput())
             return m_GroundedState.m_MoveState;
 
+        //Crouch Down
+        if (InputWrapper.GetButtonState(eInputAction.Crouch).IsPressedOrHeld())
+            return m_GroundedState.m_IdleCrouchState;
+
         return base.OnUpdate();
     }
 }
@@ -113,7 +130,6 @@ public class PlayerMoveState : PlayerGroundedSubState
 
     public override PlayerState OnUpdate()
     {
-        //Claculate Speed
         PollingAxis MovementAxis = InputWrapper.GetAxis(eInputAction.Movement);
 
         //Check if the player is pushing in a different direction with enough speed built up to skid
@@ -126,10 +142,18 @@ public class PlayerMoveState : PlayerGroundedSubState
             return SkidState;
         }
 
-        if(Mathf.Abs(Speed) > m_Controller.m_SlideMargin && InputWrapper.GetButtonState(eInputAction.Slide).IsPressedOrHeld())
+        if(InputWrapper.GetButtonState(eInputAction.Crouch).IsPressedOrHeld())
         {
-            //Slidin Time!
-            return m_GroundedState.m_SlideState;
+            if (Mathf.Abs(Speed) > m_Controller.m_SlideMargin)
+            {
+                //Slidin Time!
+                return m_GroundedState.m_SlideState;
+            }
+            else
+            {
+                //Crouchin Time!
+                return m_GroundedState.m_CrouchState;
+            }
         }
 
         //Check if the player is pushing on the stick
@@ -248,20 +272,12 @@ public class PlayerStopState : PlayerGroundedSubState
     }
 }
 
-public class PlayerSlideState : PlayerGroundedSubState
+public class PlayerBaseCrouchState : PlayerGroundedSubState
 {
-    public PlayerSlideState(PlayerGroundedState GroundedState) : base(GroundedState) { }
-
     private float m_ColliderOffset;
     private float m_ColliderHeight;
 
-    private void SetupCollider(float Offset, float Height)
-    {
-        Vector3 NewCenter = m_Controller.m_Collider.center;
-        NewCenter.y = Offset;
-        m_Controller.m_Collider.center = NewCenter;
-        m_Controller.m_Collider.height = Height;
-    }
+    public PlayerBaseCrouchState(PlayerGroundedState GroundedState) : base(GroundedState) {}
 
     public override void OnEnter()
     {
@@ -277,25 +293,108 @@ public class PlayerSlideState : PlayerGroundedSubState
         SetupCollider(m_ColliderOffset - (NewHeight / 2.0f), NewHeight);
     }
 
-    public override PlayerState OnUpdate()
-    {
-        //Remove speed whilst sliding
-        Speed += m_Controller.m_SlideFriction * Time.deltaTime * -Mathf.Sign(Speed);
-
-        //Check if we've lost too much speed to slide or if we've stopped holding the slide button
-        if(Mathf.Abs(Speed) < m_Controller.m_SlideMargin || InputWrapper.GetButtonState(eInputAction.Slide).IsReleased())
-        {
-            return m_GroundedState.m_MoveState;
-        }
-
-        return base.OnUpdate();
-    }
-
     public override void OnExit()
     {
         base.OnExit();
 
         //Restore Collider Setup
         SetupCollider(m_ColliderOffset, m_ColliderHeight);
+    }
+
+    public bool CanUncrouch()
+    {
+        Vector3 Offset = m_Controller.m_Position + new Vector3(0, m_Controller.m_Collider.height - (0.25f / 2f));
+        return !Physics.Raycast(Offset, Vector3.up, 0.25f, m_Controller.m_GroundMask, QueryTriggerInteraction.Ignore);
+    }
+}
+
+public class PlayerCrouchIdleState : PlayerBaseCrouchState
+{
+    public PlayerCrouchIdleState(PlayerGroundedState GroundedState) : base(GroundedState) { }
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        //Player is Idle
+        CurrentSprite = m_Controller.m_Crouch;
+    }
+
+    public override PlayerState OnUpdate()
+    {
+        //Stand Back up
+        if (InputWrapper.GetButtonState(eInputAction.Crouch).IsReleasedOrNone() && CanUncrouch())
+            return m_GroundedState.m_IdleState;
+
+        //Check if the player wants to move
+        if (InputWrapper.GetAxis(eInputAction.Movement).HasInput())
+            return m_GroundedState.m_CrouchState;
+
+        return base.OnUpdate();
+    }
+}
+
+public class PlayerSlideState : PlayerBaseCrouchState
+{
+    public PlayerSlideState(PlayerGroundedState GroundedState) : base(GroundedState) { }
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        CurrentSprite = m_Controller.m_Slide;
+    }
+
+    public override PlayerState OnUpdate()
+    {
+        //Remove speed whilst sliding
+        Speed += m_Controller.m_SlideFriction * Time.deltaTime * -Mathf.Sign(Speed);
+
+        //Check if we've lost too much speed to slide or if we've stopped holding the slide button
+        if(Mathf.Abs(Speed) < m_Controller.m_SlideMargin || InputWrapper.GetButtonState(eInputAction.Crouch).IsReleasedOrNone())
+        {
+            //Check if we can stand up
+            if (!CanUncrouch())
+            {
+                return m_GroundedState.m_CrouchState;
+            }
+
+            return m_GroundedState.m_MoveState;
+        }
+
+        return base.OnUpdate();
+    }
+}
+
+public class PlayerCrouchMoveState : PlayerBaseCrouchState
+{
+    public PlayerCrouchMoveState(PlayerGroundedState GroundedState) : base(GroundedState) {}
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        CurrentSprite = m_Controller.m_Crouch;
+    }
+
+    public override PlayerState OnUpdate()
+    {
+        PollingAxis MovementAxis = InputWrapper.GetAxis(eInputAction.Movement);
+
+        //Lock Speed to crouch speed
+        Speed = m_Controller.m_CrouchSpeed * MovementAxis;
+
+        if (InputWrapper.GetButtonState(eInputAction.Crouch).IsReleasedOrNone() && CanUncrouch())
+        {
+            return m_GroundedState.m_MoveState;
+        }
+
+        //Check if we are crouching Idle
+        if (Mathf.Abs(Speed) <= 0.01f)
+        {
+            return m_GroundedState.m_IdleCrouchState;
+        }
+    
+        return base.OnUpdate();
     }
 }

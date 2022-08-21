@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public float m_StopDelay = 0.25f;
     public float m_JumpForce = 20;
     public float m_SlideMargin = 3f;
+    public float m_CrouchSpeed = 1.5f;
 
     [Header("Physics")]
     public CapsuleCollider m_Collider;
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviour
     public Sprite m_Jump;
     public Sprite m_Airbourne;
     public Sprite m_Hurt;
+    public Sprite m_Crouch;
 
     public PlayerState State
     {
@@ -118,14 +120,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        int LastIDx = m_Side.IDx;
         m_Position = transform.position;
         m_Side     = Manager.GetSide(m_Position);
-
-        if (LastIDx != m_Side.IDx)
-        {
-            //
-        }
 
         if(m_State != m_JumpState)
             CheckGrounded();

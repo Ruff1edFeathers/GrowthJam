@@ -84,7 +84,7 @@ public enum eInputAction
     Jump,
     Pause,
     Run,
-    Slide,
+    Crouch,
     Total
 }
 
@@ -94,6 +94,7 @@ public static class eButtonStateExtension
     public static bool IsPressedOrHeld(this eButtonState State) { return State == eButtonState.Pressed || State == eButtonState.Held; }
     public static bool IsHeld(this eButtonState State) { return State == eButtonState.Held; }
     public static bool IsReleased(this eButtonState State) { return State == eButtonState.Released; }
+    public static bool IsReleasedOrNone(this eButtonState State) { return State == eButtonState.Released || State == eButtonState.None; }
 }
 
 public class InputWrapper
@@ -125,7 +126,7 @@ public class InputWrapper
         m_Value[(int)eInputAction.Jump]     = new PollingButton(Asset.FindAction("Jump"));
         m_Value[(int)eInputAction.Pause]    = new PollingButton(Asset.FindAction("Pause"));
         m_Value[(int)eInputAction.Run]      = new PollingButton(Asset.FindAction("Run"));
-        m_Value[(int)eInputAction.Slide]    = new PollingButton(Asset.FindAction("Slide"));
+        m_Value[(int)eInputAction.Crouch]   = new PollingButton(Asset.FindAction("Crouch"));
 
         Asset.Enable();
         InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
