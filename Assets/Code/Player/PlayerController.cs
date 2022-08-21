@@ -261,12 +261,12 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+#if UNITY_EDITOR
     private void OnGUI()
     {
         GUI.Label(new Rect(0, Screen.height - 25,  300, 25), "Speed: " + m_Speed);
         GUI.Label(new Rect(0, Screen.height - 50, 300, 25),  "Velocity: " + m_Velocity);
         GUI.Label(new Rect(0, Screen.height - 75, 300, 25),  "Health: " + m_Health);
     }
-
-    
+#endif
 }
