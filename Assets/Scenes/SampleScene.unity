@@ -54044,8 +54044,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Target: {fileID: 1106581013}
-  m_GrowSpeed: 2
-  m_DesiredDistance: 0.5
+  m_GrowSpeed_Min: 1.5
+  m_GrowSpeed_Max: 2
+  m_DesiredDistance: 1.2
 --- !u!1001 &2104155151
 PrefabInstance:
   m_ObjectHideFlags: 0
