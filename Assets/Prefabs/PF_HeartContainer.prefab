@@ -121,6 +121,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 5ab5801002b1edc4fb0a3d7eb8c8341c,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: af4e6edb15fd11a4b87ae7ac37f33431, type: 2}
     - target: {fileID: 919132149155446097, guid: 5ab5801002b1edc4fb0a3d7eb8c8341c,
         type: 3}
       propertyPath: m_Name
@@ -149,7 +154,7 @@ Animation:
   m_GameObject: {fileID: 3050847664936559664}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 0}
+  m_Animation: {fileID: 7400000, guid: 1abe3a9db5ed5524bb3e65f47388b342, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 1abe3a9db5ed5524bb3e65f47388b342, type: 2}
   m_WrapMode: 0
