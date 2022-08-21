@@ -31,7 +31,7 @@ public class PlayerState
 
     public Vector3 Position { get { return m_Controller.m_Position; } }
 
-    public Vector3 Velocity
+    public Vector2 Velocity
     {
         get { return m_Controller.m_Velocity; }
         set { m_Controller.m_Velocity = value; }
@@ -43,7 +43,12 @@ public class PlayerState
         set { m_Controller.m_Speed = value; }
     }
 
-    public bool Grounded { get { return m_Controller.m_Grounded; } }
+    public bool Grounded 
+    { 
+        get { return m_Controller.m_Grounded; }
+        set { m_Controller.m_Grounded = value; }
+    }
+
     public Vector3 Grounded_Normal { get { return m_Controller.m_GroundNormal; } }
 
     public Sprite CurrentSprite
@@ -60,6 +65,7 @@ public class PlayerState
     public virtual void OnEnter()
     {
         m_TimeInState = 0;
+        SubState?.OnEnter();
     }
 
     public virtual PlayerState OnUpdate()
@@ -77,6 +83,7 @@ public class PlayerState
 
     public virtual void OnExit()
     {
+        SubState?.OnExit();
         m_TimeInState = 0;
     }
 }

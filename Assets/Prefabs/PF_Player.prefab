@@ -93,22 +93,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87d0255d6e6c76d49a30b3a9898d2ea0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxHealth: 5
+  m_MaxHealth: 1
+  m_DamageGracePeroid: 2
   m_BaseSpeed: 2.5
   m_AccelSpeed: 1.25
   m_MaxSpeed: 10
   m_SkidSpeed: 2
   m_StopDelay: 0.25
+  m_JumpForce: 9
   m_Collider: {fileID: 4245724381659684257}
   m_MaxSlopeAngle: 50
-  m_StopFricition: 3.5
-  m_Gravity: 2
+  m_StopFricition: 8
+  m_Gravity: 21
   m_RayCheckOffset: 0.25
   m_RayCheckCount: 4
   m_GroundMask:
     serializedVersion: 2
     m_Bits: 8
   m_Renderer: {fileID: 276497279358968593}
+  m_Animator: {fileID: 8440670996945172888}
+  m_DeathAnim: {fileID: 7400000, guid: b3d0edda8e80c764e9efc277cd82cf5b, type: 2}
+  m_HurtColour: {r: 1, g: 0.41037738, b: 0.41037738, a: 1}
+  m_FlashSpeed: 0.25
   m_Stand: {fileID: 21300000, guid: d894438d85690e745834ec4a34114d61, type: 3}
   m_WalkAnimSpeed: 0.25
   m_Walk1: {fileID: 21300000, guid: 5b5a603f5e22a98488c068b4e01c584f, type: 3}
@@ -144,6 +150,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4351843140063857138}
   - component: {fileID: 276497279358968593}
+  - component: {fileID: 8440670996945172888}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -218,3 +225,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!111 &8440670996945172888
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4941807039420137098}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 0}
+  m_Animations:
+  - {fileID: 7400000, guid: b3d0edda8e80c764e9efc277cd82cf5b, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0

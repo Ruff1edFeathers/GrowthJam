@@ -19,6 +19,7 @@ public class CameraController : MonoBehaviour
     public eCameraState m_State;
 
     private Quaternion m_OffsetRot;
+    private Quaternion m_StartRot;
     private float m_Rotation;
 
     public void OnSetup()

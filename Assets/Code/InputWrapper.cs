@@ -82,7 +82,9 @@ public enum eInputAction
 {
     Movement,
     Jump,
-    Pause
+    Pause,
+    Run,
+    Total
 }
 
 public static class eButtonStateExtension
@@ -112,7 +114,7 @@ public class InputWrapper
         return ((PollingButton)s_Instance.m_Value[(int)Action]).m_Value;
     }
 
-    private PollingInput[] m_Value = new PollingInput[3];
+    private PollingInput[] m_Value = new PollingInput[(int)eInputAction.Total];
 
     public InputWrapper(InputActionAsset Asset)
     {
@@ -121,6 +123,7 @@ public class InputWrapper
         m_Value[(int)eInputAction.Movement] = new PollingAxis(Asset.FindAction("Movement"));
         m_Value[(int)eInputAction.Jump]     = new PollingButton(Asset.FindAction("Jump"));
         m_Value[(int)eInputAction.Pause]    = new PollingButton(Asset.FindAction("Pause"));
+        m_Value[(int)eInputAction.Run]      = new PollingButton(Asset.FindAction("Run"));
 
         Asset.Enable();
         InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;

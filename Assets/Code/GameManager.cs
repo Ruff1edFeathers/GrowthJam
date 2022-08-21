@@ -33,11 +33,13 @@ public class GameManager : MonoBehaviour
     public MainMenuUI m_MainMenuUI;
     public PauseUI    m_PauseUI;
     public HUDUI      m_HUDUI;
+    public GameObject m_GameOverUI;
 
     //Cached Values
     public InputWrapper m_InputWrapper;
 
     private bool m_Setup;
+    private bool m_GameOver;
 
     public void StartGame()
     {
@@ -49,6 +51,20 @@ public class GameManager : MonoBehaviour
 
         m_MainMenuUI.SetState(false);
         m_HUDUI.SetState(true);
+        m_GameOverUI.SetActive(false);
+    }
+
+    public void GameOver()
+    {
+        if(m_GameOver)
+        {
+            Debug.LogError("Game Over has already been triggered");
+            return;
+        }
+
+        m_HUDUI.SetState(false);
+        m_GameOverUI.SetActive(true);
+        m_GameOver = true;
     }
 
     private void OnSetup()
@@ -75,8 +91,11 @@ public class GameManager : MonoBehaviour
         //Grab Inputs before anything else
         m_InputWrapper.OnUpdate();
 
+        if (m_GameOver)
+            return;
+
         //Only update pause UI when we aren't show the Main Menu UI
-        if(!m_MainMenuUI.m_State)
+        if (!m_MainMenuUI.m_State)
         {
             m_PauseUI.OnUpdate();
 
@@ -85,6 +104,6 @@ public class GameManager : MonoBehaviour
         }
 
         //Run Main Game Loop
-        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State);
+        PlatformManager.Instance.OnUpdate(!m_MainMenuUI.m_State && !m_GameOver);
     }
 }

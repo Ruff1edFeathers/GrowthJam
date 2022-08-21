@@ -62,8 +62,8 @@ public class HUDUI : MonoBehaviour
 
         for(int i = 0; i < m_VisiblePipsLen; i++)
         {
-            m_HealthPips[i].texture = i <= Health ? m_HeartIcon : m_HeartBrokenIcon;
-            m_HealthPips[i].color   = i <= Health ? m_FilledColour : m_BrokenColour;
+            m_HealthPips[i].texture = i <= Health - 1 ? m_HeartIcon : m_HeartBrokenIcon;
+            m_HealthPips[i].color   = i <= Health - 1 ? m_FilledColour : m_BrokenColour;
         }
     }
 }

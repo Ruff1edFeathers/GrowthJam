@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public float m_MaxSpeed = 10.0f;
     public float m_SkidSpeed = 2f;
     public float m_StopDelay = 0.25f;
+    public float m_JumpForce = 20;
 
     [Header("Physics")]
     public CapsuleCollider m_Collider;
@@ -27,6 +28,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Animation")]
     public SpriteRenderer m_Renderer;
+    public Animation m_Animator;
+    public AnimationClip m_DeathAnim;
     public Color m_HurtColour = Color.red;
     public float m_FlashSpeed = 0.25f;
     public Sprite m_Stand;
@@ -64,7 +67,7 @@ public class PlayerController : MonoBehaviour
     public SideResults m_Side;
     [System.NonSerialized] public float   m_Height;
     [System.NonSerialized] public float   m_Speed;
-    [System.NonSerialized] public Vector3 m_Velocity;
+    [System.NonSerialized] public Vector2 m_Velocity;
     [System.NonSerialized] public Vector3 m_Position;
     [System.NonSerialized] public bool    m_Grounded;
     [System.NonSerialized] public Vector3 m_GroundedHit;
@@ -73,12 +76,14 @@ public class PlayerController : MonoBehaviour
 
     public PlayerGroundedState  m_GroundedState;
     public PlayerAirbourneState m_AirbourneState;
+    public PlayerJumpState      m_JumpState;
     public PlayerDeadState      m_DeadState;
 
     public void OnSetup(PlatformManager Manager)
     {
         m_GroundedState  = new PlayerGroundedState(this);
         m_AirbourneState = new PlayerAirbourneState(this);
+        m_JumpState      = new PlayerJumpState(this);
         m_DeadState      = new PlayerDeadState(this);
 
         m_Health = m_MaxHealth;
@@ -108,15 +113,25 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        int LastIDx = m_Side.IDx;
         m_Position = transform.position;
         m_Side     = Manager.GetSide(m_Position);
 
-        CheckGrounded();
+        if (LastIDx != m_Side.IDx)
+        {
+            //
+        }
+
+        if(m_State != m_JumpState)
+            CheckGrounded();
 
         //Clamp X & Z position onto platform side
         m_Position.x = m_Side.Position.x;
         if (m_Grounded) m_Position.y = m_GroundedHit.y; //Player is grounded clamp to the ground y position
         m_Position.z = m_Side.Position.z;
+
+        //Track speed to determine the direction the sprite should be facing
+        m_Renderer.flipX = m_Speed > 0;
 
         //Update the current state
         PlayerState NewState = State.OnUpdate();
@@ -132,9 +147,11 @@ public class PlayerController : MonoBehaviour
         }
 
         //Calculate this frames velocity and subtract it from the new total
-        Vector3 FrameVelocity = m_Velocity * Time.deltaTime;
+        Vector2 FrameVelocity = m_Velocity * Time.deltaTime;
         m_Velocity -= FrameVelocity;
-        m_Position += FrameVelocity;
+
+        //Convert 2D Velocity into 3D Position
+        m_Position += (m_Side.Delta * FrameVelocity.x) + new Vector3(0, FrameVelocity.y);
 
         //Apply new Rotation and positions
         transform.rotation = Quaternion.LookRotation(m_Side.Normal); //TODO: These rotations can be pre-calculated
@@ -181,7 +198,7 @@ public class PlayerController : MonoBehaviour
         m_GroundNormal = Hit.normal;
     }
 
-    public bool CheckCollision(Vector3 Velocity, out RaycastHit Hit)
+    public bool CheckCollision(Vector2 Velocity, out RaycastHit Hit)
     {
         //Check for collision along the projected velocity
         //TODO: Check if hit collision normal is less than the max accepted slope angle
@@ -193,9 +210,9 @@ public class PlayerController : MonoBehaviour
         const float Padding = 0.1f;
         float   Height  = m_Collider.height - Padding;
         Vector3 Offset  = new Vector3(0, Height / m_RayCheckCount, 0);
-        Vector3 VelDir  = Vector3.Normalize(new Vector3(Velocity.x, Velocity.y > 0.0f ? Velocity.y : 0.0f, Velocity.z));
-
-        for(int i = 0; i < m_RayCheckCount; i++)
+        Vector3 VelDir  = Vector3.Normalize((m_Side.Delta * Velocity.x) + new Vector3(0, Velocity.y));
+        
+        for (int i = 0; i < m_RayCheckCount; i++)
         {
             Vector3 Origin = m_Position + (Offset * i) + new Vector3(0, Padding, 0);
             if(Physics.Raycast(Origin, VelDir, out Hit, m_RayCheckOffset, m_GroundMask, QueryTriggerInteraction.Ignore))
@@ -213,9 +230,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(0, Screen.height - 25,  100, 25), "Speed: " + m_Speed);
-        GUI.Label(new Rect(0, Screen.height - 50, 100, 25),  "Velocity: " + m_Velocity);
-        GUI.Label(new Rect(0, Screen.height - 75, 100, 25),  "Health: " + m_Health);
+        GUI.Label(new Rect(0, Screen.height - 25,  300, 25), "Speed: " + m_Speed);
+        GUI.Label(new Rect(0, Screen.height - 50, 300, 25),  "Velocity: " + m_Velocity);
+        GUI.Label(new Rect(0, Screen.height - 75, 300, 25),  "Health: " + m_Health);
     }
 
     

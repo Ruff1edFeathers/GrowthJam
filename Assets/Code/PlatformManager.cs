@@ -7,6 +7,7 @@ public struct SideResults
     public Vector3 Position; //Point along side
     public Vector3 Normal;
     public Vector3 Delta; //Right Direction for this side
+    public int IDx;
 }
 
 //Add support for multiple PlatformSides, could have different segment counts
@@ -50,6 +51,8 @@ public class PlatformManager : MonoBehaviour
 
         //Camera Controller should still update, IE if we are in the main menu
         m_CameraController.OnUpdate();
+
+        SpikeTrap.UpdateTraps();
     }
 
     private void CalculatePlatformSides()
@@ -68,8 +71,8 @@ public class PlatformManager : MonoBehaviour
             SideData Data;
             Data.P0     = m_ControlPoints[i].position;
             Data.P1     = m_ControlPoints[(i + 1) % Len].position;
-            Data.Delta  = Vector3.Normalize(Data.P1 - Data.P0);
-            Data.Normal = Vector3.Normalize(Vector3.Cross(Data.Delta, Vector3.up));
+            Data.Delta  = Vector3.Normalize(Data.P0 - Data.P1);
+            Data.Normal = -Vector3.Normalize(Vector3.Cross(Data.Delta, Vector3.up));
             m_Sides[i] = Data;
         }
     }
@@ -99,7 +102,8 @@ public class PlatformManager : MonoBehaviour
         {
             Position = ClosestSide_Point,
             Normal   = m_Sides[ClosetSide_IDx].Normal,
-            Delta    = m_Sides[ClosetSide_IDx].Delta
+            Delta    = m_Sides[ClosetSide_IDx].Delta,
+            IDx      = ClosetSide_IDx
         };
     }
 

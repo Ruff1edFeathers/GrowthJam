@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerGroundedSubState : PlayerState
 {
     public PlayerGroundedState m_GroundedState;
+    public bool m_CanJump;
 
     public PlayerGroundedSubState(PlayerGroundedState GroundedState) : base(GroundedState.m_Controller)
     {
@@ -17,18 +17,23 @@ public class PlayerGroundedSubState : PlayerState
 public class PlayerGroundedState : PlayerState
 {
     public PlayerIdleState m_IdleState;
-    public PlayerRunState  m_RunState;
+    public PlayerMoveState m_MoveState;
     public PlayerSkidState m_SkidState;
     public PlayerStopState m_StopState;
 
     public PlayerGroundedState(PlayerController Controller) : base(Controller)
     {
         m_IdleState = new PlayerIdleState(this);
-        m_RunState  = new PlayerRunState(this);
+        m_MoveState = new PlayerMoveState(this);
         m_SkidState = new PlayerSkidState(this);
         m_StopState = new PlayerStopState(this);
+    }
 
-        SubState = m_IdleState;
+    public override void OnEnter()
+    {
+        base.OnEnter();
+
+        SubState = Mathf.Abs(Speed) > 0f ? m_MoveState : m_IdleState;
     }
 
     public override PlayerState OnUpdate()
@@ -39,25 +44,33 @@ public class PlayerGroundedState : PlayerState
             return m_Controller.m_AirbourneState;
         }
 
-        m_Controller.m_Renderer.flipX = Speed > 0;
-
         //Calculate Movement along side delta and Project Movement onto surface normal
-        Vector3 Movement = -Side.Delta * Speed;
-        float Movement_Len = Movement.magnitude;
-        Movement = Vector3.Normalize(Movement);
+        //Vector3 Movement = -Side.Delta * Speed;
+        //float Movement_Len = Movement.magnitude;
+        //Movement = Vector3.Normalize(Movement);
+        //
+        //float SurfaceDot = Vector3.Dot(Movement, Grounded_Normal);
+        //Vector3 SurfaceVelocity = Vector3.Normalize(Movement - Grounded_Normal * SurfaceDot) * Movement_Len;
 
-        float SurfaceDot = Vector3.Dot(Movement, Grounded_Normal);
-        Vector3 SurfaceVelocity = Vector3.Normalize(Movement - Grounded_Normal * SurfaceDot) * Movement_Len;
+        Vector2 NewVelocity = Velocity;
+        NewVelocity.x = Speed;
 
-        if (m_Controller.CheckCollision(SurfaceVelocity, out RaycastHit Hit))
+        if (m_Controller.CheckCollision(NewVelocity, out RaycastHit Hit))
         {
             //We've hit something while grounded... say good bye to your speed
             //TODO: Play Animation & Sound effect :)
             Speed = 0;
-            SurfaceVelocity = Vector3.zero;
+            NewVelocity = Vector2.zero;
+            Debug.Log("Hit Something");
         }
 
-        Velocity = SurfaceVelocity;
+        Velocity = NewVelocity;
+
+        if (((PlayerGroundedSubState)SubState).m_CanJump && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
+        {
+            //Move to jump state!
+            return m_Controller.m_JumpState;
+        }
 
         return base.OnUpdate();
     }
@@ -65,7 +78,10 @@ public class PlayerGroundedState : PlayerState
 
 public class PlayerIdleState : PlayerGroundedSubState
 {
-    public PlayerIdleState(PlayerGroundedState GroundedState) : base(GroundedState) {}
+    public PlayerIdleState(PlayerGroundedState GroundedState) : base(GroundedState) 
+    {
+        m_CanJump = true;
+    }
 
     public override void OnEnter()
     {
@@ -79,15 +95,18 @@ public class PlayerIdleState : PlayerGroundedSubState
     {
         //Check if the player wants to move
         if (InputWrapper.GetAxis(eInputAction.Movement).HasInput())
-            return m_GroundedState.m_RunState;
+            return m_GroundedState.m_MoveState;
 
         return base.OnUpdate();
     }
 }
 
-public class PlayerRunState : PlayerGroundedSubState
+public class PlayerMoveState : PlayerGroundedSubState
 {
-    public PlayerRunState(PlayerGroundedState GroundedState) : base(GroundedState) { }
+    public PlayerMoveState(PlayerGroundedState GroundedState) : base(GroundedState)
+    {
+        m_CanJump = true;
+    }
 
     private float m_StopTimer;
 
@@ -126,10 +145,24 @@ public class PlayerRunState : PlayerGroundedSubState
 
             m_StopTimer += Time.deltaTime;
         }
+        else
+        {
+            if (Mathf.Abs(Speed) < m_Controller.m_BaseSpeed)
+                Speed = m_Controller.m_BaseSpeed * Mathf.Sign(MovementAxis);
 
-        //Player is pushing movement in same dir, accumulate speed
-        Speed += InputWrapper.GetAxis(eInputAction.Movement) * m_Controller.m_BaseSpeed * Time.deltaTime;
-        Speed = Mathf.Clamp(Speed, -m_Controller.m_MaxSpeed, m_Controller.m_MaxSpeed); //Make sure we dont exceed the max speed
+            //Check if we want to run
+            if (InputWrapper.GetButtonState(eInputAction.Run).IsPressedOrHeld())
+            {
+                //Player is pushing movement in same dir, accumulate speed
+                Speed += MovementAxis * m_Controller.m_AccelSpeed * Time.deltaTime;
+                Speed = Mathf.Clamp(Speed, -m_Controller.m_MaxSpeed, m_Controller.m_MaxSpeed); //Make sure we dont exceed the max speed
+            }
+            else if(Mathf.Abs(Speed) > m_Controller.m_BaseSpeed)
+            {
+                //Slow down to base speed
+                Speed += m_Controller.m_StopFricition * Time.deltaTime * -Mathf.Sign(Speed);
+            }
+        }
 
         //Play running animation
         float TimeBetweenFrames = m_Controller.m_WalkAnimSpeed * (1f - Mathf.Clamp01(m_Controller.m_Speed / m_Controller.m_MaxSpeed));
@@ -172,7 +205,7 @@ public class PlayerSkidState : PlayerGroundedSubState
             if (InputWrapper.GetAxis(eInputAction.Movement).HasInput())
             {
                 // Input on movement detected, transition into movement
-                return m_GroundedState.m_RunState;
+                return m_GroundedState.m_MoveState;
             }
             else
             {
@@ -207,6 +240,9 @@ public class PlayerStopState : PlayerGroundedSubState
             Speed = 0f;
             return m_GroundedState.m_IdleState;
         }
+
+        if (InputWrapper.GetAxis(eInputAction.Movement).HasInput())
+            return m_GroundedState.m_MoveState;
 
         return base.OnUpdate();
     }
