@@ -51,15 +51,15 @@ public class PlatformManager : MonoBehaviour
         if (RunGame)
         {
             m_PlayerController.OnUpdate(this);
+
+            SpikeTrap.UpdateTraps();
+
+            m_AnimateEnv.OnUpdate();
+            m_AnimatePlants.OnUpdate(m_PlayerController);
         }
 
         //Camera Controller should still update, IE if we are in the main menu
         m_CameraController.OnUpdate();
-
-        SpikeTrap.UpdateTraps();
-
-        m_AnimateEnv.OnUpdate();
-        m_AnimatePlants.OnUpdate(m_PlayerController);
     }
 
     private void CalculatePlatformSides()
