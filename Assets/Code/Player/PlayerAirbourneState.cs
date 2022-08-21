@@ -6,13 +6,15 @@ public class PlayerJumpState : PlayerState
 {
     public PlayerJumpState(PlayerController Controller) : base(Controller) {}
 
+    public float m_JumpForce;
+
     public override void OnEnter()
     {
         base.OnEnter();
         
         //Force Grounded to be false since we are about to jump
         Grounded  = false;
-        Velocity += new Vector2(0, m_Controller.m_JumpForce);
+        Velocity += new Vector2(0, m_JumpForce);
 
         CurrentSprite = m_Controller.m_Jump;
     }

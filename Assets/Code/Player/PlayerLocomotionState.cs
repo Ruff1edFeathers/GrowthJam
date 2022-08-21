@@ -75,6 +75,7 @@ public class PlayerGroundedState : PlayerState
         if (((PlayerGroundedSubState)SubState).m_CanJump && InputWrapper.GetButtonState(eInputAction.Jump).IsPressed())
         {
             //Move to jump state!
+            m_Controller.m_JumpState.m_JumpForce = m_Controller.m_JumpForce;
             return m_Controller.m_JumpState;
         }
 

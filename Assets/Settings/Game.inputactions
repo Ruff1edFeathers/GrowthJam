@@ -153,6 +153,17 @@
                 },
                 {
                     "name": "",
+                    "id": "5f6cae78-56c0-4ee6-8bcf-d013de22f4dc",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "af458274-b6f4-4426-b005-6531d58efd8e",
                     "path": "<Keyboard>/pause",
                     "interactions": "",
