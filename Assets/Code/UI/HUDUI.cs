@@ -26,12 +26,17 @@ public class HUDUI : MonoBehaviour
         m_HeartTemplate.gameObject.SetActive(false);
 
         //Make sure HUD is hidden at startup
-        SetState(false);
+        Hide();
     }
 
-    public void SetState(bool Visible)
+    public void Show()
     {
-        gameObject.SetActive(Visible);
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
 
     public void SetupHealth(int MaxHealth)

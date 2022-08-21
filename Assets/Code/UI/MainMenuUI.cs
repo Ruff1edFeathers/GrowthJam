@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class MainMenuUI : MonoBehaviour
 {
-    public bool m_State { get; private set; }
-
-    public void SetState(bool Visible)
+    public void Show()
     {
-        m_State = Visible;
+        gameObject.SetActive(true);
+        Time.timeScale = 0.0f;
+    }
 
-        gameObject.SetActive(m_State);
-
-        if (m_State) Time.timeScale = 0.0f;
-        else Time.timeScale = 1.0f;
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+        Time.timeScale = 1.0f;
     }
 }

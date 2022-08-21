@@ -9,5 +9,8 @@ public class EndTrigger : MonoBehaviour
             return;
 
         Controller.State = Controller.m_CheerState;
+
+        GameManager.s_Instance.m_HUDUI.Hide();
+        GameManager.s_Instance.m_EndUI.SetActive(true);
     }
 }

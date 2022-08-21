@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
 
     //Inspector Varibles
     public InputActionAsset m_GameInputAsset;
-    public MainMenuUI m_MainMenuUI;
+    public GameObject m_MainMenuUI;
+    public GameObject m_EndUI;
     public HUDUI      m_HUDUI;
     public PlatformManager m_PlatformManager;
     public CameraController m_CameraController;
@@ -19,17 +20,20 @@ public class GameManager : MonoBehaviour
     public InputWrapper m_InputWrapper;
 
     private bool  m_Setup;
+    private bool  m_PlayingGame;
     private float m_PlayerSpawnTimer;
 
     public void StartGame()
     {
-        if(!m_MainMenuUI.m_State)
+        if(m_PlayingGame)
         {
             Debug.LogError("Game should already be running?");
             return;
         }
 
-        m_MainMenuUI.SetState(false);
+        m_MainMenuUI.SetActive(false);
+        m_EndUI.SetActive(false);
+        m_PlayingGame = true;
     }
 
     private void Awake()
@@ -50,7 +54,8 @@ public class GameManager : MonoBehaviour
         m_AnimateEnv.OnSetup();
         m_AnimatePlants.OnSetup();
 
-        m_MainMenuUI.SetState(true);
+        m_MainMenuUI.SetActive(true);
+        m_EndUI.SetActive(false);
         m_PlayerSpawnTimer = 5f;
     }
 
@@ -65,7 +70,7 @@ public class GameManager : MonoBehaviour
         //Grab Inputs before anything else
         m_InputWrapper.OnUpdate();
 
-        if (m_MainMenuUI.m_State)
+        if (!m_PlayingGame)
         {
             m_CameraController.OnUpdate();
             return;
@@ -79,7 +84,7 @@ public class GameManager : MonoBehaviour
             {
                 //Show Player
                 m_PlayerController.gameObject.SetActive(true);
-                m_HUDUI.SetState(true);
+                m_HUDUI.Show();
                 m_CameraController.m_State = eCameraState.TrackTarget;
             }
         }

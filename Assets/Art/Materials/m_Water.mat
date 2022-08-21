@@ -28,7 +28,7 @@ Material:
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: d8f1deefd76bfb546ad7dcbd631d408e, type: 3}
         m_Scale: {x: 20, y: 20}
-        m_Offset: {x: -0.00035428556, y: -0.00279462}
+        m_Offset: {x: 0.029532252, y: 0.035290267}
     - _SampleTexture2D_3534CE37_Texture_1:
         m_Texture: {fileID: 2800000, guid: e9bc9f9cfe383be439496ea2117945da, type: 3}
         m_Scale: {x: 1, y: 1}
